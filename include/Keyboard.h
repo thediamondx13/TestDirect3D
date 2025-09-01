@@ -17,6 +17,7 @@ public:
 		Event( Type type, unsigned char key ) noexcept : type( type ), key( key ) {}
 		bool IsDown() const noexcept { return type == Type::K_DOWN; }
 
+	private:
 		Type type;
 		unsigned char key;
 	};
@@ -26,8 +27,8 @@ public:
 	Keyboard& operator=( const Keyboard& ) = delete;
 
 	std::optional<Event> ReadKey() noexcept;
-	void Flush() noexcept { keyBuffer = std::queue<Event>(); }
-	bool IsKeyDown( unsigned char key ) const noexcept { return keyStates[key]; }
+	void FlushEventBuffer() noexcept { keyBuffer = std::queue<Event>(); }
+	bool IsKeyDown( unsigned char key ) const noexcept { return keyStates.test( key ); }
 
 private:
 	void ClearStates() noexcept { keyStates.reset(); }
@@ -35,8 +36,8 @@ private:
 	void OnKeyUp( unsigned char key ) noexcept;
 
 	static constexpr unsigned int bufferSize = 16u;
-	static constexpr unsigned int nKeys = 256u; // TODO consider renaming
-	bool useAutorepeat = false;
+	static constexpr unsigned int nKeys = 256u;
+	//bool useAutorepeat = false;
 
 	std::bitset<nKeys> keyStates;
 	std::queue<Event> keyBuffer;

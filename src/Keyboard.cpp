@@ -11,14 +11,14 @@ std::optional<Keyboard::Event> Keyboard::ReadKey() noexcept
 
 void Keyboard::OnKeyDown( unsigned char key ) noexcept
 {
-    keyStates[key] = true;
+    keyStates.set( key );
     keyBuffer.push( Event( Event::K_DOWN, key ) );
     if ( keyBuffer.size() > bufferSize ) keyBuffer.pop();
 }
 
 void Keyboard::OnKeyUp( unsigned char key ) noexcept
 {
-    keyStates[key] = false;
+    keyStates.reset( key );
     keyBuffer.push( Event( Event::K_UP, key ) );
     if ( keyBuffer.size() > bufferSize ) keyBuffer.pop();
 }

@@ -93,6 +93,7 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) n
 		PostQuitMessage( 0 );
 		return 0;
 
+	// keyboard messages
 	case WM_KEYDOWN:
 		if( lParam & 0x40000000 ) break; // filter autorepeat
 		keyboard.OnKeyDown( static_cast<unsigned char>(wParam) );
@@ -100,6 +101,56 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) n
 	
 	case WM_KEYUP:
 		keyboard.OnKeyUp( static_cast<unsigned char>(wParam) );
+		break;
+
+	// mouse movement
+	case WM_MOUSEMOVE:
+	{
+		POINTS pos = MAKEPOINTS( lParam );
+
+		if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height)
+		{
+			mouse.OnMouseMove( pos );
+			if( !mouse.IsInWindow() ) 
+			{
+				SetCapture( hWnd );
+				mouse.OnMouseEnter();
+			}
+		}
+		else
+		{
+			if( wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON | MK_XBUTTON1 | MK_XBUTTON2) )
+				mouse.OnMouseMove( pos );
+			else
+			{
+				ReleaseCapture();
+				mouse.OnMouseLeave();
+			}
+		}
+		break;
+	}
+	
+	// mouse button down
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:	
+	case WM_MBUTTONDOWN:
+	case WM_XBUTTONDOWN:
+		mouse.OnButtonDown( msg, wParam, lParam );
+		break;
+	
+	// mouse button up
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_XBUTTONUP:
+		mouse.OnButtonUp( msg, wParam, lParam );
+		break;
+
+	// mouse wheel
+	case WM_MOUSEWHEEL:
+		short delta = GET_WHEEL_DELTA_WPARAM( wParam );
+		POINTS pos = MAKEPOINTS( lParam );
+		mouse.OnScroll( delta, pos );
 		break;
 	}
 

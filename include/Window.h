@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <Keyboard.h>
+#include <Mouse.h>
 
 class Window
 {
@@ -16,6 +17,7 @@ public:
 	Window& operator=( const Window& ) = delete;
 
 	Keyboard keyboard;
+	Mouse mouse;
 
 private:
 	class WindowClass
