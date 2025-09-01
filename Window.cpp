@@ -3,8 +3,9 @@
 // ---------- WINDOW CLASS DEFINITION ----------
 
 Window::WindowClass Window::WindowClass::wndClass;
+constexpr LPCWSTR Window::WindowClass::wndClassName;
 
-Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
+Window::WindowClass::WindowClass() noexcept : hInstance( GetModuleHandle( nullptr ) )
 {
 	WNDCLASSEX wc = { 0 };
 
@@ -27,32 +28,12 @@ Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
 	RegisterClassEx( &wc );
 }
 
-HINSTANCE Window::WindowClass::GetInstance()
-{
-	return wndClass.hInstance;
-}
-
-LPCWSTR Window::WindowClass::GetName()
-{
-	return wndClassName;
-}
-
-DWORD Window::WindowClass::GetStyle()
-{
-	return wndStyle;
-}
-
-Window::WindowClass::~WindowClass()
-{
-	UnregisterClass( wndClassName, hInstance );
-}
-
 // ---------- WINDOW DEFINITION ----------
 
 constexpr int defWidth = 1280;
 constexpr int defHeight = 720;
 
-Window::Window( const LPCWSTR name ) : 
+Window::Window( const LPCWSTR name ) noexcept : 
 	width( defWidth ), height( defHeight ),
 	style( WindowClass::GetStyle() )
 {
@@ -73,7 +54,7 @@ Window::Window( const LPCWSTR name ) :
 	ShowWindow( hWnd, SW_SHOW );
 }
 
-LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
 {
 	if( msg == WM_CREATE )
 	{
@@ -95,7 +76,7 @@ LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc( hWnd, msg, wParam, lParam );
 }
 
-LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
 {
 	// retrieve pointer to window instance	
 	Window* const pWnd = reinterpret_cast<Window*>(GetWindowLongPtr( hWnd, GWLP_USERDATA ));
@@ -104,16 +85,24 @@ LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 }
 
-LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
 {
-	switch( msg ) {
+	switch( msg )
+	{
 	case WM_CLOSE:
 		PostQuitMessage( 0 );
 		return 0;
-	}
+
+	case WM_KEYDOWN:
+		if( lParam & 0x40000000 ) break; // filter autorepeat
+		keyboard.OnKeyDown( static_cast<unsigned char>(wParam) );
+		break;
 	
+	case WM_KEYUP:
+		keyboard.OnKeyUp( static_cast<unsigned char>(wParam) );
+		break;
+	}
+
 	// inherit default message handling
 	return DefWindowProc( hWnd, msg, wParam, lParam );
 }
-
-Window::~Window() { DestroyWindow( hWnd ); }
