@@ -1,5 +1,5 @@
 #include <Windows.h>
-#include "Window.h"
+#include <Window.h>
 
 int CALLBACK WinMain(
 	_In_ HINSTANCE hInstance,
@@ -24,5 +24,4 @@ int CALLBACK WinMain(
 	{
 		return -1;
 	}
-	return -1;
 }
