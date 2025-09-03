@@ -1,9 +1,10 @@
 #pragma once
 
-#include <queue>
-#include <bitset>
-#include <optional>
+// standard includes
 #include <Windows.h>
+#include <optional>
+#include <bitset>
+#include <queue>
 
 class Mouse
 {
@@ -28,7 +29,7 @@ public:
 		Type type;
 	};
 
-	Mouse() = default;
+	Mouse() : pos( POINTS(0, 0) ) {};
 	Mouse( const Mouse& ) = delete;
 	Mouse& operator=( const Mouse& ) = delete;
 

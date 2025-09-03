@@ -1,6 +1,9 @@
 #pragma once
 
+// standard includes
 #include <Windows.h>
+
+// project includes
 #include <Keyboard.h>
 #include <Mouse.h>
 
@@ -15,6 +18,8 @@ public:
 	
 	// explicitly delete assignment operator
 	Window& operator=( const Window& ) = delete;
+
+	static std::optional<int> ProcessMessages();
 
 	Keyboard keyboard;
 	Mouse mouse;
