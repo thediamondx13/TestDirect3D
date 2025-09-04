@@ -13,6 +13,6 @@ int Application::Run()
 
 void Application::RenderFrame()
 {	
-	// TODO
+	window.GetGfxDevice().SwapBuffers();
 }
 

@@ -52,6 +52,9 @@ Window::Window( const LPCWSTR name ) noexcept :
 		nullptr, nullptr, WindowClass::GetInstance(), this);
 
 	ShowWindow( hWnd, SW_SHOW );
+
+	// construct graphical device
+	pGfx = std::make_unique<DXDevice>( hWnd );
 }
 
 std::optional<int> Window::ProcessMessages()

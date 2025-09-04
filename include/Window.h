@@ -7,6 +7,9 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 
+// graphics includes
+#include <DXDevice.h>
+
 class Window
 {
 public:
@@ -20,6 +23,9 @@ public:
 	Window& operator=( const Window& ) = delete;
 
 	static std::optional<int> ProcessMessages();
+
+	// graph device getter
+	DXDevice& GetGfxDevice() { return *pGfx; }
 
 	Keyboard keyboard;
 	Mouse mouse;
@@ -56,4 +62,6 @@ private:
 	LPCWSTR caption;
 	DWORD style;
 	HWND hWnd;
+
+	std::unique_ptr<DXDevice> pGfx;
 };
