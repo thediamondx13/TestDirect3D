@@ -5,7 +5,7 @@
 Window::WindowClass Window::WindowClass::wndClass;
 constexpr LPCWSTR Window::WindowClass::wndClassName;
 
-Window::WindowClass::WindowClass() noexcept : hInstance( GetModuleHandle( nullptr ) )
+Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
 {
 	WNDCLASSEX wc = { 0 };
 
@@ -30,10 +30,10 @@ Window::WindowClass::WindowClass() noexcept : hInstance( GetModuleHandle( nullpt
 
 // ---------- WINDOW DEFINITION ----------
 
-constexpr int defWidth = 1280;
-constexpr int defHeight = 720;
+constexpr int defWidth = 800;
+constexpr int defHeight = 600;
 
-Window::Window( const LPCWSTR name ) noexcept : 
+Window::Window( const LPCWSTR name ) : 
 	width( defWidth ), height( defHeight ),
 	style( WindowClass::GetStyle() )
 {
@@ -71,7 +71,7 @@ std::optional<int> Window::ProcessMessages()
 	return std::nullopt;
 }
 
-LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
+LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	if( msg == WM_CREATE )
 	{
@@ -93,7 +93,7 @@ LRESULT Window::HandleStartupMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc( hWnd, msg, wParam, lParam );
 }
 
-LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
+LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	// retrieve pointer to window instance	
 	Window* const pWnd = reinterpret_cast<Window*>(GetWindowLongPtr( hWnd, GWLP_USERDATA ));
@@ -102,7 +102,7 @@ LRESULT Window::HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 }
 
-LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
+LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	switch( msg )
 	{
@@ -120,6 +120,15 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) n
 		keyboard.OnKeyUp( static_cast<unsigned char>(wParam) );
 		break;
 
+	// set default cursor
+	case WM_SETCURSOR:
+		if( LOWORD(lParam) == HTCLIENT )
+		{
+			SetCursor( LoadCursor( nullptr, IDC_ARROW ) );
+			return TRUE;
+		}
+		break;
+
 	// mouse movement
 	case WM_MOUSEMOVE:
 	{
@@ -128,7 +137,7 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam ) n
 		if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height)
 		{
 			mouse.OnMouseMove( pos );
-			if( !mouse.IsInWindow() ) 
+			if( !mouse.IsInWindow() )
 			{
 				SetCapture( hWnd );
 				mouse.OnMouseEnter();

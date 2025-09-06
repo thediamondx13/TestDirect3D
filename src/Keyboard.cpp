@@ -1,6 +1,6 @@
 #include <Keyboard.h>
 
-std::optional<Keyboard::Event> Keyboard::ReadKey() noexcept
+std::optional<Keyboard::Event> Keyboard::ReadKey()
 {
     if (keyBuffer.empty()) return std::nullopt;
 
@@ -9,14 +9,14 @@ std::optional<Keyboard::Event> Keyboard::ReadKey() noexcept
     return e;
 }
 
-void Keyboard::OnKeyDown( unsigned char key ) noexcept
+void Keyboard::OnKeyDown( unsigned char key )
 {
     keyStates.set( key );
     keyBuffer.push( Event( Event::K_DOWN, key ) );
     if ( keyBuffer.size() > bufferSize ) keyBuffer.pop();
 }
 
-void Keyboard::OnKeyUp( unsigned char key ) noexcept
+void Keyboard::OnKeyUp( unsigned char key )
 {
     keyStates.reset( key );
     keyBuffer.push( Event( Event::K_UP, key ) );

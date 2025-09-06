@@ -17,12 +17,12 @@ public:
 		enum Type { ENTER, NEW_POS, K_DOWN, K_UP, WHL_DOWN, WHL_UP, LEAVE };
 		enum Button { LEFT, RIGHT, MIDDLE, FORWARD, BACK, NONE };
 	
-		Event( Type type, Button button, POINTS pos ) noexcept 
+		Event( Type type, Button button, POINTS pos ) 
 			: type( type ), button( button ), pos( pos ) {}
 		
-		Button GetButton() const noexcept { return button; }
-		POINTS GetPos() const noexcept { return pos; }
-		Type GetType() const noexcept { return type; }
+		Button GetButton() const { return button; }
+		POINTS GetPos() const { return pos; }
+		Type GetType() const { return type; }
 	private:
 		Button button;
 		POINTS pos;
@@ -33,21 +33,23 @@ public:
 	Mouse( const Mouse& ) = delete;
 	Mouse& operator=( const Mouse& ) = delete;
 
-	bool IsInWindow() const noexcept { return isInWindow; }
+	POINTS GetPos() const { return pos; }
+
+	bool IsInWindow() const { return isInWindow; }
 
 	std::optional<Event> ReadEvent();
 	void FlushEventBuffer();
 
 private:
-	void OnMouseMove( POINTS pos ) noexcept;
+	void OnMouseMove( POINTS pos );
 	
-	void OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept;
-	void OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept;
+	void OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam );
+	void OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam );
 
-	void OnScroll( short delta, POINTS pos ) noexcept;
+	void OnScroll( short delta, POINTS pos );
 
-	void OnMouseLeave() noexcept;
-	void OnMouseEnter() noexcept;
+	void OnMouseLeave();
+	void OnMouseEnter();
 
 	static constexpr unsigned int bufferSize = 16u;
 	static constexpr unsigned int nButtons = 5u;

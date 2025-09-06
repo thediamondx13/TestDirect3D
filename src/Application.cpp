@@ -13,6 +13,8 @@ int Application::Run()
 
 void Application::RenderFrame()
 {	
+	window.GetGfxDevice().ClearBuffer( 0.3f, 0.1f, 0.1f );
+	window.GetGfxDevice().DrawPrimitive(window.mouse.GetPos());
 	window.GetGfxDevice().SwapBuffers();
 }
 

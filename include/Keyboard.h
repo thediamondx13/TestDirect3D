@@ -15,8 +15,8 @@ public:
 	public:
 		enum Type { K_DOWN, K_UP };
 
-		Event( Type type, unsigned char key ) noexcept : type( type ), key( key ) {}
-		bool IsDown() const noexcept { return type == Type::K_DOWN; }
+		Event( Type type, unsigned char key ) : type( type ), key( key ) {}
+		bool IsDown() const { return type == Type::K_DOWN; }
 
 	private:
 		Type type;
@@ -27,14 +27,14 @@ public:
 	Keyboard( const Keyboard& ) = delete;
 	Keyboard& operator=( const Keyboard& ) = delete;
 
-	std::optional<Event> ReadKey() noexcept;
-	void FlushEventBuffer() noexcept { keyBuffer = std::queue<Event>(); }
-	bool IsKeyDown( unsigned char key ) const noexcept { return keyStates.test( key ); }
+	std::optional<Event> ReadKey();
+	void FlushEventBuffer() { keyBuffer = std::queue<Event>(); }
+	bool IsKeyDown( unsigned char key ) const { return keyStates.test( key ); }
 
 private:
-	void ClearStates() noexcept { keyStates.reset(); }
-	void OnKeyDown( unsigned char key ) noexcept;
-	void OnKeyUp( unsigned char key ) noexcept;
+	void ClearStates() { keyStates.reset(); }
+	void OnKeyDown( unsigned char key );
+	void OnKeyUp( unsigned char key );
 
 	static constexpr unsigned int bufferSize = 16u;
 	static constexpr unsigned int nKeys = 256u;
