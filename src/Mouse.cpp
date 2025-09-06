@@ -8,21 +8,21 @@ std::optional<Mouse::Event> Mouse::ReadEvent()
 	return e;
 }
 
-void Mouse::OnMouseEnter() noexcept
+void Mouse::OnMouseEnter()
 {
 	isInWindow = true;
 	eventBuffer.push( Event( Event::ENTER, Event::NONE, pos ) );
 	if( eventBuffer.size() > bufferSize ) eventBuffer.pop();
 }
 
-void Mouse::OnMouseMove( POINTS pos ) noexcept
+void Mouse::OnMouseMove( POINTS pos )
 {
 	this->pos = pos;
 	eventBuffer.push( Event( Event::NEW_POS, Event::NONE, pos ) );
 	if ( eventBuffer.size() > bufferSize ) eventBuffer.pop();
 }
 
-void Mouse::OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
+void Mouse::OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	POINTS pos = MAKEPOINTS( lParam );
 	Event::Button button = Event::NONE;
@@ -58,7 +58,7 @@ void Mouse::OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
 	eventBuffer.push( Event( Event::K_DOWN, button, pos ) );
 	if( eventBuffer.size() > bufferSize ) eventBuffer.pop();
 }
-void Mouse::OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
+void Mouse::OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam )
 {
 	POINTS pos = MAKEPOINTS( lParam );
 	Event::Button button = Event::NONE;
@@ -95,7 +95,7 @@ void Mouse::OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam ) noexcept
 	if( eventBuffer.size() > bufferSize ) eventBuffer.pop();
 }
 
-void Mouse::OnScroll( short delta, POINTS pos ) noexcept
+void Mouse::OnScroll( short delta, POINTS pos )
 {
 	wheelDeltaCarry += delta;
 
@@ -114,7 +114,7 @@ void Mouse::OnScroll( short delta, POINTS pos ) noexcept
 	}
 }
 
-void Mouse::OnMouseLeave() noexcept
+void Mouse::OnMouseLeave()
 {
 	isInWindow = false;
 	eventBuffer.push( Event( Event::LEAVE, Event::NONE, pos ) );
