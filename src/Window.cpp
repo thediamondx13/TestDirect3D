@@ -2,12 +2,12 @@
 
 // ---------- WINDOW CLASS DEFINITION ----------
 
-Window::WindowClass Window::WindowClass::wndClass;
-constexpr LPCWSTR Window::WindowClass::wndClassName;
+Window::WindowClass Window::WindowClass::s_wndClass;
+constexpr LPCWSTR Window::WindowClass::s_wndClassName;
 
-Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
+Window::WindowClass::WindowClass() : _hInstance( GetModuleHandle( nullptr ) )
 {
-	WNDCLASSEX wc = { 0 };
+	WNDCLASSEX wc{};
 
 	// style definitions
 	wc.hbrBackground = nullptr;
@@ -21,8 +21,8 @@ Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
 	// end style definitions
 
 	wc.lpfnWndProc = HandleStartupMsg;
-	wc.lpszClassName = wndClassName;
-	wc.hInstance = hInstance;
+	wc.lpszClassName = s_wndClassName;
+	wc.hInstance = _hInstance;
 	wc.cbSize = sizeof( wc );
 
 	RegisterClassEx( &wc );
@@ -30,31 +30,30 @@ Window::WindowClass::WindowClass() : hInstance( GetModuleHandle( nullptr ) )
 
 // ---------- WINDOW DEFINITION ----------
 
-constexpr int defWidth = 800;
-constexpr int defHeight = 600;
-
-Window::Window( const LPCWSTR name ) : 
-	width( defWidth ), height( defHeight ),
-	style( WindowClass::GetStyle() )
+Window::Window( LONG width, LONG height, const LPCWSTR name ) : _style( WindowClass::GetStyle() ),
+	_cCenter( width >> 1, height >> 1 ), _sCenter( width >> 1, height >> 1 ),
+	_caption( name ), _width( width ), _height( height )
 {
-	RECT wRect {};
-	wRect.left = 100;
-	wRect.top = 100;
-	wRect.right = width + wRect.left;
-	wRect.bottom = height + wRect.top;
-	AdjustWindowRect( &wRect, style, FALSE );
+	// center the window rect
+	_wRect.top = (GetSystemMetrics( SM_CYSCREEN ) - height) >> 1;
+	_wRect.left = (GetSystemMetrics( SM_CXSCREEN ) - width) >> 1;
+	_wRect.bottom = _wRect.top + height;
+	_wRect.right = _wRect.left + width;
+	
+	// adjust window's width and height	
+	AdjustWindowRect( &_wRect, _style, FALSE );	
+	height = _wRect.bottom - _wRect.top;
+	width = _wRect.right -= _wRect.left;
 
-	this->caption = name;
-
-	hWnd = CreateWindow(WindowClass::GetName(), 
-		caption, style, CW_USEDEFAULT, CW_USEDEFAULT, 
-		wRect.right - wRect.left, wRect.bottom - wRect.top,
-		nullptr, nullptr, WindowClass::GetInstance(), this);
-
-	ShowWindow( hWnd, SW_SHOW );
+	// create and display the window
+	_hWnd = CreateWindow( WindowClass::GetName(), _caption, _style,
+		_wRect.left, _wRect.top, width, height, nullptr, nullptr,
+		WindowClass::GetInstance(), this
+	);
+	ShowWindow( _hWnd, SW_SHOW );	
 
 	// construct graphical device
-	pGfx = std::make_unique<DXDevice>( hWnd );
+	_pGfx = std::make_unique<DXDevice>( _hWnd, _width, _height );
 }
 
 std::optional<int> Window::ProcessMessages()
@@ -113,6 +112,7 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 	// keyboard messages
 	case WM_KEYDOWN:
 		if( lParam & 0x40000000 ) break; // filter autorepeat
+		if ( wParam == VK_ESCAPE ) mouse.Release();
 		keyboard.OnKeyDown( static_cast<unsigned char>(wParam) );
 		break;
 	
@@ -129,36 +129,40 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		}
 		break;
 
+	// window move
+	case WM_MOVE:
+		_sCenter = _cCenter;
+		ClientToScreen( _hWnd, &_sCenter );		
+		break;
+
 	// mouse movement
 	case WM_MOUSEMOVE:
 	{
-		POINTS pos = MAKEPOINTS( lParam );
-
-		if (pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height)
+		if ( mouse.IsCaptured() )
 		{
+			POINTS pos = MAKEPOINTS( lParam );
 			mouse.OnMouseMove( pos );
-			if( !mouse.IsInWindow() )
-			{
-				SetCapture( hWnd );
-				mouse.OnMouseEnter();
-			}
-		}
-		else
-		{
-			if( wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON | MK_XBUTTON1 | MK_XBUTTON2) )
-				mouse.OnMouseMove( pos );
-			else
-			{
-				ReleaseCapture();
-				mouse.OnMouseLeave();
-			}
+
+			// move mouse back to center
+			mouse.SetPosition( _cCenter );
+			SetCursorPos( _sCenter.x, _sCenter.y );
 		}
 		break;
 	}
 	
 	// mouse button down
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:	
+	case WM_LBUTTONDOWN: 
+		if ( !mouse.IsCaptured() ) {
+			// capture the mouse's movements
+			mouse.Capture( _hWnd );
+
+			/* set the position to the center
+			 so the camera won't flick */
+			mouse.SetPosition( _cCenter );
+			SetCursorPos( _sCenter.x, _sCenter.y );
+		}		
+		[[fallthrough]]; //fall to process LKM with m.OnButtonDown 
+	case WM_RBUTTONDOWN:
 	case WM_MBUTTONDOWN:
 	case WM_XBUTTONDOWN:
 		mouse.OnButtonDown( msg, wParam, lParam );

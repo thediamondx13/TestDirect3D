@@ -1,0 +1,64 @@
+#include <Camera.h>
+
+Camera::Camera( int screenW, int screenH ) : _width( screenW ), _height( screenH ),
+	_aspectRatio( static_cast<float>( screenW ) / screenH )
+{
+	// lonely comment
+}
+
+DX::XMMATRIX Camera::GetCameraView() const
+{
+	const DX::XMVECTOR pos = DX::XMLoadFloat3( &_position );
+
+	return DX::XMMatrixLookAtLH( pos,
+		DX::XMVectorAdd( DX::XMLoadFloat3( &_lookF ), pos ),
+		DX::XMLoadFloat3( &_lookU )
+	);
+}
+
+DX::XMMATRIX Camera::GetProjection() const
+{
+	return DX::XMMatrixPerspectiveLH( _aspectRatio, 1.0f, _nearZ, _farZ );
+}
+
+void Camera::MoveSideways( float dt )
+{
+	const DX::XMVECTOR delta = DX::XMVectorScale( DX::XMLoadFloat3( &_lookR ), _velocity * dt );
+	DX::XMStoreFloat3( &_position, DX::XMVectorAdd( DX::XMLoadFloat3( &_position ), delta ) );
+}
+
+void Camera::MoveForward( float dt )
+{
+	const DX::XMVECTOR delta = DX::XMVectorScale( DX::XMLoadFloat3( &_lookF ), _velocity * dt );
+	DX::XMStoreFloat3( &_position, DX::XMVectorAdd( DX::XMLoadFloat3( &_position ), delta ) );
+}
+
+void Camera::ProcessMouseDelta( float dPitch, float dYaw )
+{
+	_rotation.x -= _sensitivity * dPitch;
+	_rotation.y -= _sensitivity * dYaw;
+
+	UpdateLooks();
+}
+
+void Camera::UpdateLooks()
+{
+	const DX::XMMATRIX rotate = DX::XMMatrixRotationRollPitchYaw(
+		_rotation.x, _rotation.y, _rotation.z
+	);
+
+	// update forward vector
+	DX::XMStoreFloat3( &_lookF, DX::XMVector3Normalize(
+		DX::XMVector3Transform( DX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotate )
+	) );
+
+	// update up vector
+	DX::XMStoreFloat3( &_lookU, DX::XMVector3Normalize(
+		DX::XMVector3Transform( DX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), rotate )
+	) );
+
+	// update right vector
+	DX::XMStoreFloat3( &_lookR, DX::XMVector3Normalize(
+		DX::XMVector3Transform( DX::XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f ), rotate )
+	) );
+}
