@@ -87,13 +87,13 @@ void Application::ProcessKeyboard( const float dt )
 				break;
 			}
 		}
-		else
+		/*else
 		{
 			switch ( e->key )
 			{
 
 			}
-		}
+		}*/
 	}
 }
 
