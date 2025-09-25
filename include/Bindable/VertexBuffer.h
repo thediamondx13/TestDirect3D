@@ -6,8 +6,8 @@ class VertexBuffer : public Bindable
 {
 public:
 	template<typename V>
-	VertexBuffer( DXDevice& gfx, const std::vector<V>& vertices ) :
-		stride( static_cast<UINT>(sizeof( V )) )
+	VertexBuffer( DXDevice &gfx, const std::vector<V> &vertices ) :
+		_stride( static_cast<UINT>(sizeof( V )) )
 	{
 		const D3D11_BUFFER_DESC bd{
 			static_cast<UINT>(sizeof( V ) * vertices.size()),
@@ -19,13 +19,13 @@ public:
 			vertices.data(), 0u, 0u
 		};
 
-		GetDevice( gfx )->CreateBuffer( &bd, &sd, &pVertexBuffer );
+		GetDevice( gfx )->CreateBuffer( &bd, &sd, &_pVertexBuffer );
 	}
 
-	void Bind( DXDevice& gfx ) override;
+	void Bind( DXDevice &gfx ) override;
 
 protected:
-	UINT stride;
-	UINT offset = 0u;
-	ComPtr<ID3D11Buffer> pVertexBuffer;
+	UINT _stride;
+	UINT _offset = 0u;
+	ComPtr<ID3D11Buffer> _pVertexBuffer;
 };

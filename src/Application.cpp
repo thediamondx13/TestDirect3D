@@ -4,7 +4,7 @@ Application::Application() : _window( 1280, 720, L"Direct3D test app" ) {}
 
 int Application::Run()
 {
-	constexpr int size = 100;
+	/*constexpr int size = 0;
 
 	_cubes.resize( size );
 	for ( int i = 0; i < size; i++ )
@@ -13,11 +13,11 @@ int Application::Run()
 		for ( auto &pCube : _cubes )
 		{
 			if ( pCube == nullptr ) break;
-			pCube->Update( 0.3f );
+			pCube->Update( 7.0f );
 		}
-	}
+	}*/
 	
-	_sphere = std::make_unique<Sphere>( _window.GetGfxDevice() );
+	_sphere = std::make_unique<Sphere>( _window.GetGfxDevice(), _window.GetGfxDevice().camera );
 
 	while ( true )
 	{
@@ -99,17 +99,16 @@ void Application::ProcessKeyboard( const float dt )
 
 void Application::RenderFrame( float dt )
 {
-	_window.GetGfxDevice().FillBuffer( 0.3f, 0.1f, 0.1f );
+	_window.GetGfxDevice().FillBuffer( 0.3f, 0.1f, 0.1f );		
 
-	_sphere->Draw( _window.GetGfxDevice() );
-	if ( _window.keyboard.IsKeyDown(VK_SPACE) ) _sphere->Update( dt );
-
-	for ( auto &pCube : _cubes )
+	/*for ( auto &pCube : _cubes )
 	{
 		if ( pCube == nullptr ) break;
 		pCube->Draw( _window.GetGfxDevice() );
 		pCube->Update( dt );
-	}
+	}*/
+
+	_sphere->Draw( _window.GetGfxDevice() );
 
 	_window.GetGfxDevice().SwapBuffers();
 }

@@ -1,7 +1,6 @@
 #include <Camera.h>
 
-Camera::Camera( int screenW, int screenH ) : _width( screenW ), _height( screenH ),
-	_aspectRatio( static_cast<float>( screenW ) / screenH )
+Camera::Camera( int screenW, int screenH ) : _aspectRatio( static_cast<float>(screenW) / screenH )
 {
 	// lonely comment
 }
@@ -21,6 +20,16 @@ DX::XMMATRIX Camera::GetProjection() const
 	return DX::XMMatrixPerspectiveLH( _aspectRatio, 1.0f, _nearZ, _farZ );
 }
 
+DX::XMVECTOR Camera::GetLook() const
+{
+	return DX::XMLoadFloat3( &_lookF );
+}
+
+DX::XMVECTOR Camera::GetPos() const
+{
+	return DX::XMLoadFloat3( &_position );
+}
+
 void Camera::MoveSideways( float dt )
 {
 	const DX::XMVECTOR delta = DX::XMVectorScale( DX::XMLoadFloat3( &_lookR ), _velocity * dt );
@@ -36,7 +45,12 @@ void Camera::MoveForward( float dt )
 void Camera::ProcessMouseDelta( float dPitch, float dYaw )
 {
 	_rotation.x -= _sensitivity * dPitch;
+	if ( _rotation.x > +1.57f ) _rotation.x = +1.57f;
+	if ( _rotation.x < -1.57f ) _rotation.x = -1.57f;
+
 	_rotation.y -= _sensitivity * dYaw;
+	if ( _rotation.y > 6.28f ) _rotation.y -= 6.28f;
+	if ( _rotation.y < 0.00f ) _rotation.y += 6.28f;
 
 	UpdateLooks();
 }

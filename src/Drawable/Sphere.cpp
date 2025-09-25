@@ -1,14 +1,14 @@
 #include <Drawable/Sphere.h>
 
-Sphere::Sphere( DXDevice &gfx )
+Sphere::Sphere( DXDevice &gfx, Camera &cam )
 {
-	radius = 2.0f;
-	pos = DX::XMFLOAT3( 0.0f, 0.0f, 7.0f );
-	velocity = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	acceleration = DX::XMFLOAT3( 1.0f, 0.0f, 0.0f );
+	_radius = 2.0f;
+	_pos = DX::XMFLOAT3( 0.0f, 0.0f, 5.0f );
+	_velocity = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_acceleration = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
 
-	rotation = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	rotationVel = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_rotation = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_rotationVel = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
 
 	if ( InitializeStatic() )
 	{
@@ -17,7 +17,7 @@ Sphere::Sphere( DXDevice &gfx )
 		constexpr int longDiv = 40;
 		constexpr int latDiv = 20;
 				
-		DX::XMVECTOR base = DX::XMVectorSet( radius, 0.0f, 0.0f, 0.0f );
+		DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 0.0f );
 		const float longAng = DX::XM_2PI / longDiv;
 		const float latAng = DX::XM_PI / latDiv;
 
@@ -101,6 +101,9 @@ Sphere::Sphere( DXDevice &gfx )
 
 		// add primitive topology bind
 		AddBind( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
+
+		// add camera pixel shader constant buffer
+		AddBind( std::make_unique<CameraConstBuf>( gfx, cam ) );
 	}
 	else
 	{
@@ -109,26 +112,26 @@ Sphere::Sphere( DXDevice &gfx )
 		SetIndexFromStatic();
 	}
 
-	// add transformation matrix bind
+	// add transformation matrix vertex constant buffer bind
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
 }
 
 void Sphere::Update( float dt )
 {
-	DX::XMStoreFloat3( &pos, DX::XMVectorAdd(
-		DX::XMVectorScale( DX::XMLoadFloat3( &velocity ), dt ),
-		DX::XMLoadFloat3( &pos ))
+	DX::XMStoreFloat3( &_pos, DX::XMVectorAdd(
+		DX::XMVectorScale( DX::XMLoadFloat3( &_velocity ), dt ),
+		DX::XMLoadFloat3( &_pos ))
 	);
 
-	DX::XMStoreFloat3( &velocity, DX::XMVectorAdd(
+	/*DX::XMStoreFloat3( &velocity, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &acceleration ), dt ),
 		DX::XMLoadFloat3( &velocity ))
-	);
+	);*/
 
-	if ( pos.x > 1 ) acceleration.x = -1.0f;
-	if ( pos.x < -1 ) acceleration.x = 1.0f;
+	/*if ( pos.x > 1 ) acceleration.x = -1.0f;
+	if ( pos.x < -1 ) acceleration.x = 1.0f;*/
 
-	if ( abs( velocity.x ) > 3.0f ) velocity.x *= 0.9f;
+	//if ( abs( velocity.x ) > 3.0f ) velocity.x *= 0.9f;
 
 	/*DX::XMStoreFloat3( &rotation, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &rotationVel ), dt ),
@@ -139,6 +142,6 @@ void Sphere::Update( float dt )
 
 inline DX::XMMATRIX Sphere::GetTransform() const
 {
-	return DX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
-		DX::XMMatrixTranslation( pos.x, pos.y, pos.z );
+	return DX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
+		DX::XMMatrixTranslation( _pos.x, _pos.y, _pos.z );
 }

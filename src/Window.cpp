@@ -28,6 +28,11 @@ Window::WindowClass::WindowClass() : _hInstance( GetModuleHandle( nullptr ) )
 	RegisterClassEx( &wc );
 }
 
+Window::WindowClass::~WindowClass()
+{
+	UnregisterClass( s_wndClassName, _hInstance );
+}
+
 // ---------- WINDOW DEFINITION ----------
 
 Window::Window( LONG width, LONG height, const LPCWSTR name ) : _style( WindowClass::GetStyle() ),

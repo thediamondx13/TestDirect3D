@@ -5,20 +5,18 @@
 class Sphere : public Drawable<Sphere>
 {
 public:
-	Sphere( DXDevice &gfx );	
+	Sphere( DXDevice &gfx, Camera &cam );
 
 	inline DX::XMMATRIX GetTransform() const override;
 	void Update( float dt ) override;
 
-	~Sphere() = default;
-
 protected:
-	
-	float radius;
-	DX::XMFLOAT3 pos;
-	DX::XMFLOAT3 velocity;
-	DX::XMFLOAT3 acceleration;
-	
-	DX::XMFLOAT3 rotation;
-	DX::XMFLOAT3 rotationVel;
+
+	float _radius;
+	DX::XMFLOAT3 _pos;
+	DX::XMFLOAT3 _velocity;
+	DX::XMFLOAT3 _acceleration;
+
+	DX::XMFLOAT3 _rotation;
+	DX::XMFLOAT3 _rotationVel;
 };

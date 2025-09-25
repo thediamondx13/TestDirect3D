@@ -14,18 +14,15 @@ using namespace std::chrono;
 class Application
 {
 public:
-	Application();
-	Application(const Application&) = delete;
-	Application& operator=(const Application&) = delete;
-
-	int Run();
+    Application();
+    int Run();
 
 protected:
-    class Timer 
+    class Timer
     {
     public:
-        Timer() : last(std::chrono::steady_clock::now()) {}
-        
+        Timer() : last( std::chrono::steady_clock::now() ) {}
+
         float delta()
         {
             float delta = duration<float>( steady_clock::now() - last ).count();
@@ -47,13 +44,13 @@ protected:
         steady_clock::time_point last;
     };
 
-	void ProcessMouse();
+    void ProcessMouse();
     void ProcessKeyboard( const float dt );
 
-	void RenderFrame( float dt );
+    void RenderFrame( float dt );
 
-	Window _window;
-	Timer _timer;
+    Window _window;
+    Timer _timer;
 
     std::vector<std::unique_ptr<DrawableBase>> _cubes;
 

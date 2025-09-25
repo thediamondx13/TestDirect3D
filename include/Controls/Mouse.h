@@ -34,9 +34,10 @@ public:
 	public:
 		enum Type { CAPTURE, NEW_POS, K_DOWN, K_UP, WHL_DOWN, WHL_UP, RELESE };
 		enum Button { LEFT, RIGHT, MIDDLE, FORWARD, BACK, NONE };
-	
+
 		Event( Type type, Button button, std::optional<Pos> delta, Pos pos )
-			: type( type ), button( button ), delta( delta ), pos( pos ) {}
+			: type( type ), button( button ), delta( delta ), pos( pos )
+		{}
 
 		std::optional<Pos> delta;
 		Button button;
@@ -44,9 +45,7 @@ public:
 		Pos pos;
 	};
 
-	Mouse() : _pos( Pos(0, 0) ) {};
-	Mouse( const Mouse& ) = delete;
-	Mouse& operator=( const Mouse& ) = delete;
+	Mouse() : _pos( Pos( 0, 0 ) ) {};
 
 	bool IsCaptured() const { return _isCaptured; }
 
@@ -56,7 +55,7 @@ public:
 	std::optional<Event> ReadEvent();
 	void FlushEventBuffer();
 
-protected:	
+protected:
 	void OnButtonDown( UINT msg, WPARAM wParam, LPARAM lParam );
 	void OnButtonUp( UINT msg, WPARAM wParam, LPARAM lParam );
 	void OnScroll( short delta, Pos pos );
@@ -64,10 +63,10 @@ protected:
 	void Capture( HWND hWnd );
 	void Release();
 
-	static constexpr unsigned int BUFFER_SIZE = 16u;
-	static constexpr unsigned int N_BUTTONS = 5u;
+	static constexpr unsigned int S_BUFFER_SIZE = 16u;
+	static constexpr unsigned int S_N_BUTTONS = 5u;
 
-	std::bitset<N_BUTTONS> _buttonStates;
+	std::bitset<S_N_BUTTONS> _buttonStates;
 	std::queue<Event> _eventBuffer;
 	short _wheelDeltaCarry = 0;
 	bool _isCaptured = false;

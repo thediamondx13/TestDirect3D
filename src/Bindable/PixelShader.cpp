@@ -1,6 +1,6 @@
 #include <Bindable/PixelShader.h>
 
-PixelShader::PixelShader( DXDevice& gfx, const LPCWSTR path )
+PixelShader::PixelShader( DXDevice &gfx, const LPCWSTR path )
 {
 	ComPtr<ID3DBlob> pPixelShaderBlob;
 
@@ -11,11 +11,11 @@ PixelShader::PixelShader( DXDevice& gfx, const LPCWSTR path )
 	GetDevice( gfx )->CreatePixelShader(
 		pPixelShaderBlob->GetBufferPointer(),
 		pPixelShaderBlob->GetBufferSize(),
-		nullptr, &pPixelShader
+		nullptr, &_pPixelShader
 	);
 }
 
-void PixelShader::Bind( DXDevice& gfx ) 
+void PixelShader::Bind( DXDevice &gfx )
 {
-	GetContext( gfx )->PSSetShader( pPixelShader.Get(), nullptr, 0u );
+	GetContext( gfx )->PSSetShader( _pPixelShader.Get(), nullptr, 0u );
 }

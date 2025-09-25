@@ -21,15 +21,12 @@ class DXDevice
 public:
 	// constructor, operators, destructor
 	DXDevice( HWND hWnd, LONG width, LONG height );
-	DXDevice& operator=( const DXDevice& ) = delete;
-	DXDevice( const DXDevice& ) = delete;	
-	~DXDevice() = default;
-	
+
 	// drawing routine
 	void FillBuffer( float r, float g, float b );
 	void DrawIndexed( UINT count );
 	void SwapBuffers();
-	
+
 	Camera camera;
 
 protected:
@@ -54,5 +51,5 @@ protected:
 
 	// stores last pDevice call result
 	// may be useful for debugging
-	HRESULT lastResult; 
+	HRESULT lastResult;
 };

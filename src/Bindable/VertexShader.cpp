@@ -1,26 +1,26 @@
 #include <Bindable/VertexShader.h>
 
-VertexShader::VertexShader( DXDevice& gfx, LPCWSTR path )
+VertexShader::VertexShader( DXDevice &gfx, LPCWSTR path )
 {
 	// read file data
-	D3DReadFileToBlob( path, &pVertexShaderBlob );
+	D3DReadFileToBlob( path, &_pVertexShaderBlob );
 
 	// create vertex shader COM
-	GetDevice(gfx)->CreateVertexShader(
-		pVertexShaderBlob->GetBufferPointer(),
-		pVertexShaderBlob->GetBufferSize(),
-		nullptr, &pVertexShader
+	GetDevice( gfx )->CreateVertexShader(
+		_pVertexShaderBlob->GetBufferPointer(),
+		_pVertexShaderBlob->GetBufferSize(),
+		nullptr, &_pVertexShader
 	);
 }
 
-void VertexShader::Bind( DXDevice& gfx )
+void VertexShader::Bind( DXDevice &gfx )
 {
 	GetContext( gfx )->VSSetShader(
-		pVertexShader.Get(), nullptr, 0u
+		_pVertexShader.Get(), nullptr, 0u
 	);
 }
 
-ID3DBlob* VertexShader::GetByteCode()
+ID3DBlob *VertexShader::GetByteCode()
 {
-	return pVertexShaderBlob.Get();
+	return _pVertexShaderBlob.Get();
 }

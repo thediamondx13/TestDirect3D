@@ -5,9 +5,9 @@
 class PixelShader : public Bindable
 {
 public:
-	PixelShader( DXDevice& gfx, const LPCWSTR path );
-	void Bind( DXDevice& gfx ) override;
+	PixelShader( DXDevice &gfx, const LPCWSTR path );
+	void Bind( DXDevice &gfx ) override;
 
 protected:
-	ComPtr<ID3D11PixelShader> pPixelShader;
+	ComPtr<ID3D11PixelShader> _pPixelShader;
 };

@@ -5,12 +5,10 @@
 class Cube : public Drawable<Cube>
 {
 public:
-	Cube( DXDevice& gfx );
-	
+	Cube( DXDevice &gfx );
+
 	inline DX::XMMATRIX GetTransform() const override;
 	void Update( float dt ) override;
-
-	~Cube() = default;
 
 protected:
 	// distance to center
@@ -18,12 +16,12 @@ protected:
 
 	// rotation around world center
 	float theta, phi, chi;
-	
+
 	// rotation around self center
-	float roll, pitch, yaw;	
+	float roll, pitch, yaw;
 
 	// speed
 	float droll, dpitch, dyaw;
 	float dtheta, dphi, dchi;
-	float dr;	
+	float dr;
 };

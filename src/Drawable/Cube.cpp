@@ -17,13 +17,13 @@ Cube::Cube( DXDevice& gfx )
 	// velocities
 	dr = 0;
 		
-	droll = -1.34f;
-	dpitch = 0.9f;
-	dyaw = 1.1f;
+	droll = -1.34f / 5;
+	dpitch = 0.9f / 5;
+	dyaw = 1.1f / 5;
 
 	dphi = 0;
 	dtheta = 0;
-	dchi = 1;
+	dchi = 0.1f;
 
 	struct Vertex
 	{
@@ -106,6 +106,5 @@ inline DX::XMMATRIX Cube::GetTransform() const
 {
 	return DX::XMMatrixRotationRollPitchYaw( pitch, yaw, roll ) *
 		DX::XMMatrixTranslation( r, 0.0f, 0.0f ) *
-		DX::XMMatrixRotationRollPitchYaw( theta, phi, chi ) *
-		DX::XMMatrixTranslation( 0, 0, 7.0f );
+		DX::XMMatrixRotationRollPitchYaw( theta, phi, chi );
 }

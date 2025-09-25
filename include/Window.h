@@ -14,14 +14,11 @@ class Window
 {
 public:
 	Window( LONG width, LONG height, const LPCWSTR caption );
-	Window& operator=( const Window& ) = delete;
-	Window( const Window& ) = delete;
-
 	~Window() { DestroyWindow( _hWnd ); }
 
 	static std::optional<int> ProcessMessages();
 
-	DXDevice& GetGfxDevice() { return *_pGfx; }
+	DXDevice &GetGfxDevice() { return *_pGfx; }
 	LONG GetHeight() const { return _height; }
 	LONG GetWidth() const { return _width; }
 
@@ -37,10 +34,8 @@ private:
 		static DWORD GetStyle() { return s_wndStyle; }
 	private:
 		WindowClass();
-		WindowClass( const WindowClass& ) = delete;
-		WindowClass& operator=( const WindowClass& ) = delete;
-		~WindowClass() { UnregisterClass( s_wndClassName, _hInstance ); }
-		
+		~WindowClass();
+
 		static constexpr DWORD s_wndStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 		static constexpr LPCWSTR s_wndClassName = L"MainWindowClass";
 		static WindowClass s_wndClass;
@@ -52,12 +47,12 @@ private:
 	LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
 	std::unique_ptr<DXDevice> _pGfx;
-	
+
 	// client and screen centers
 	POINT _cCenter, _sCenter;
 	LONG _width, _height;
 	LPCWSTR _caption;
 	DWORD _style;
 	RECT _wRect;
-	HWND _hWnd;	
+	HWND _hWnd;
 };

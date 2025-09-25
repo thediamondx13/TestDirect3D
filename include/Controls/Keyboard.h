@@ -21,8 +21,6 @@ public:
 	};
 
 	Keyboard() = default;
-	Keyboard( const Keyboard& ) = delete;
-	Keyboard& operator=( const Keyboard& ) = delete;
 
 	std::optional<Event> ReadKey();
 	void FlushEventBuffer() { _keyBuffer = std::queue<Event>(); }
@@ -35,11 +33,10 @@ private:
 	void OnKeyDown( unsigned char key );
 	void OnKeyUp( unsigned char key );
 
-	static constexpr unsigned int BUFFER_SIZE = 16u;
-	static constexpr unsigned int N_KEYS = 256u;
+	static constexpr unsigned int S_BUFFER_SIZE = 16u;
+	static constexpr unsigned int S_N_KEYS = 256u;
 	//bool useAutorepeat = false;
 
-	std::bitset<N_KEYS> _keyStates;
+	std::bitset<S_N_KEYS> _keyStates;
 	std::queue<Event> _keyBuffer;
 };
-

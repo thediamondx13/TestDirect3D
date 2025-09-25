@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Bindable\CameraConstBuf.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Bindable\TransformConstBuf.cpp" />
     <ClCompile Include="src\Bindable\Bindable.cpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Bindable\Bindable.h" />
+    <ClInclude Include="include\Bindable\CameraConstBuf.h" />
     <ClInclude Include="include\Bindable\ConstantBuffers.h" />
     <ClInclude Include="include\Bindable\IndexBuffer.h" />
     <ClInclude Include="include\Bindable\InputLayout.h" />
