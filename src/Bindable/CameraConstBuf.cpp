@@ -7,10 +7,9 @@ CameraConstBuf::CameraConstBuf( DXDevice &gfx, const Camera &cam ) : _cam( cam )
 void CameraConstBuf::Bind( DXDevice &gfx )
 {
 	const CamBuf cb{
-		_cam.GetProjection(),
 		_cam.GetCameraView(),
-		_cam.GetLook(),
-		_cam.GetPos()
+		_cam.GetPos(),
+		_cam.GetRes()
 	};
 
 	_pCamBuf->Update( gfx, cb );

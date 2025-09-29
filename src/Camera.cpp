@@ -1,33 +1,34 @@
 #include <Camera.h>
 
-Camera::Camera( int screenW, int screenH ) : _aspectRatio( static_cast<float>(screenW) / screenH )
+Camera::Camera( int screenW, int screenH ) :
+	_resolution( DX::XMFLOAT3( screenW, screenH, static_cast<float>(screenW) / screenH ) )
 {
-	// lonely comment
+	// _resolution.z stores aspect ratio
+}
+
+DX::XMVECTOR Camera::GetRes() const
+{
+	return DX::XMLoadFloat3( &_resolution );
+}
+
+DX::XMVECTOR Camera::GetPos() const
+{
+	return DX::XMLoadFloat3( &_position );
+}
+
+DX::XMMATRIX Camera::GetProjection() const
+{
+	return DX::XMMatrixPerspectiveLH( _resolution.z, 1.0f, _nearZ, _farZ );
 }
 
 DX::XMMATRIX Camera::GetCameraView() const
 {
 	const DX::XMVECTOR pos = DX::XMLoadFloat3( &_position );
 
-	return DX::XMMatrixLookAtLH( pos,
-		DX::XMVectorAdd( DX::XMLoadFloat3( &_lookF ), pos ),
+	return DX::XMMatrixLookToLH( pos,
+		DX::XMLoadFloat3( &_lookF ),
 		DX::XMLoadFloat3( &_lookU )
 	);
-}
-
-DX::XMMATRIX Camera::GetProjection() const
-{
-	return DX::XMMatrixPerspectiveLH( _aspectRatio, 1.0f, _nearZ, _farZ );
-}
-
-DX::XMVECTOR Camera::GetLook() const
-{
-	return DX::XMLoadFloat3( &_lookF );
-}
-
-DX::XMVECTOR Camera::GetPos() const
-{
-	return DX::XMLoadFloat3( &_position );
 }
 
 void Camera::MoveSideways( float dt )
@@ -44,7 +45,11 @@ void Camera::MoveForward( float dt )
 
 void Camera::ProcessMouseDelta( float dPitch, float dYaw )
 {
-	_rotation.x -= _sensitivity * dPitch;
+
+	/* do not use _rotation directly as the .x 
+	 component is inverted, use _look(F/U/R) */
+
+	_rotation.x += _sensitivity * dPitch;
 	if ( _rotation.x > +1.57f ) _rotation.x = +1.57f;
 	if ( _rotation.x < -1.57f ) _rotation.x = -1.57f;
 

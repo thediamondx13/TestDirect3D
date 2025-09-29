@@ -6,8 +6,8 @@
 // project includes
 #include <Window.h>
 
-#include <Drawable/Cube.h>
-#include <Drawable/Sphere.h>
+#include <Drawable/Planet.h>
+#include <Drawable/BlackHole.h>
 
 using namespace std::chrono;
 
@@ -49,10 +49,9 @@ protected:
 
     void RenderFrame( float dt );
 
-    Window _window;
     Timer _timer;
+    Window _window;
 
-    std::vector<std::unique_ptr<DrawableBase>> _cubes;
-
-    std::unique_ptr<Sphere> _sphere;
+    std::unique_ptr<BlackHole> _bh;
+    std::vector<std::unique_ptr<Planet>> _planets;
 };

@@ -2,12 +2,13 @@
 
 #include "Drawable.h"
 
-class Sphere : public Drawable<Sphere>
+class Planet : public Drawable<Planet>
 {
 public:
-	Sphere( DXDevice &gfx, Camera &cam );
+	Planet( DXDevice &gfx );
 
 	inline DX::XMMATRIX GetTransform() const override;
+	inline DX::XMVECTOR GetInfo() const;
 	void Update( float dt ) override;
 
 protected:

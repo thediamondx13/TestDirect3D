@@ -54,22 +54,22 @@
     <ClCompile Include="src\Drawable\DrawableBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Drawable\Cube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Bindable\Bindable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Bindable\TransformConstBuf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Drawable\Sphere.cpp">
+    <ClCompile Include="src\Drawable\Planet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Bindable\CameraConstBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Drawable\BlackHole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,13 +119,10 @@
     <ClInclude Include="include\Drawable\DrawableBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Drawable\Cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Drawable\Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Drawable\Sphere.h">
+    <ClInclude Include="include\Drawable\Planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Camera.h">
@@ -134,11 +131,14 @@
     <ClInclude Include="include\Bindable\CameraConstBuf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Drawable\BlackHole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shaders\CubeVS.hlsl" />
-    <FxCompile Include="shaders\CubePS.hlsl" />
-    <FxCompile Include="shaders\SphereVS.hlsl" />
-    <FxCompile Include="shaders\SpherePS.hlsl" />
+    <FxCompile Include="shaders\PlanetVS.hlsl" />
+    <FxCompile Include="shaders\BlackHolePS.hlsl" />
+    <FxCompile Include="shaders\BlackHoleVS.hlsl" />
+    <FxCompile Include="shaders\PlanetPS.hlsl" />
   </ItemGroup>
 </Project>

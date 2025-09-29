@@ -4,20 +4,21 @@ Application::Application() : _window( 1280, 720, L"Direct3D test app" ) {}
 
 int Application::Run()
 {
-	/*constexpr int size = 0;
+	constexpr int size = 1;
 
-	_cubes.resize( size );
+	_planets.resize( size );
 	for ( int i = 0; i < size; i++ )
 	{
-		_cubes[i] = std::make_unique<Cube>( _window.GetGfxDevice() );
-		for ( auto &pCube : _cubes )
+		_planets[i] = std::make_unique<Planet>( _window.GetGfxDevice() );
+		
+		/*for ( auto &pPlanet : _planets )
 		{
-			if ( pCube == nullptr ) break;
-			pCube->Update( 7.0f );
-		}
-	}*/
+			if ( pPlanet == nullptr ) break;
+			pPlanet->Update( 7.0f );
+		}*/
+	}
 	
-	_sphere = std::make_unique<Sphere>( _window.GetGfxDevice(), _window.GetGfxDevice().camera );
+	_bh = std::make_unique<BlackHole>( _window.GetGfxDevice(), _window.GetGfxDevice().camera );
 
 	while ( true )
 	{
@@ -41,11 +42,11 @@ void Application::ProcessMouse()
 		case Mouse::Event::NEW_POS:
 			const Mouse::Pos delta = e->delta.value();
 
-			/* Do not invert the vertical component as it
-			 will inverted in the camera implementation */
+			/* Vertical component must be inverted,
+			 because of different coord systems */
 			_window.GetGfxDevice().camera.ProcessMouseDelta(
-				2.0f * delta.y / _window.GetHeight(),
-				2.0f * delta.x / _window.GetWidth()
+				-2.0f * delta.y / _window.GetHeight(),
+				+2.0f * delta.x / _window.GetWidth()
 			);
 			break;
 		}
@@ -101,14 +102,14 @@ void Application::RenderFrame( float dt )
 {
 	_window.GetGfxDevice().FillBuffer( 0.3f, 0.1f, 0.1f );		
 
-	/*for ( auto &pCube : _cubes )
+	for ( auto &pPlanet : _planets )
 	{
-		if ( pCube == nullptr ) break;
-		pCube->Draw( _window.GetGfxDevice() );
-		pCube->Update( dt );
-	}*/
+		if ( pPlanet == nullptr ) break;
+		pPlanet->Draw( _window.GetGfxDevice() );
+		//pPlanet->Update( dt );
+	}
 
-	_sphere->Draw( _window.GetGfxDevice() );
+	_bh->Draw( _window.GetGfxDevice() );
 
 	_window.GetGfxDevice().SwapBuffers();
 }

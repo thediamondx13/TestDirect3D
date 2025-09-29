@@ -1,6 +1,6 @@
-#include <Drawable/Sphere.h>
+#include <Drawable/BlackHole.h>
 
-Sphere::Sphere( DXDevice &gfx, Camera &cam )
+BlackHole::BlackHole( DXDevice &gfx, Camera &cam )
 {
 	_radius = 2.0f;
 	_pos = DX::XMFLOAT3( 0.0f, 0.0f, 5.0f );
@@ -13,10 +13,10 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 	if ( InitializeStatic() )
 	{
 		// generate and store vertices
-		std::vector<DX::XMFLOAT3> vertices{};		
+		std::vector<DX::XMFLOAT3> vertices{};
 		constexpr int longDiv = 40;
 		constexpr int latDiv = 20;
-				
+
 		DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 0.0f );
 		const float longAng = DX::XM_2PI / longDiv;
 		const float latAng = DX::XM_PI / latDiv;
@@ -26,9 +26,9 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 			DX::XMVECTOR latBase = DX::XMVector3Transform(
 				base, DX::XMMatrixRotationY( latAng * i )
 			);
-			for (int j = 0; j < longDiv; j++)
+			for ( int j = 0; j < longDiv; j++ )
 			{
-				vertices.emplace_back();				
+				vertices.emplace_back();
 				DX::XMStoreFloat3( &vertices.back(),
 					DX::XMVector3Transform( latBase, DX::XMMatrixRotationX( longAng * j ) )
 				);
@@ -41,12 +41,12 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 
 		const auto iSouthPole = vertices.size();
 		vertices.emplace_back();
-		DX::XMStoreFloat3( &vertices.back(), DX::XMVectorNegate(base) );		
+		DX::XMStoreFloat3( &vertices.back(), DX::XMVectorNegate( base ) );
 
 		// bind generated vertices
 		AddBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
-		
-		std::vector<UINT> indices{};				
+
+		std::vector<UINT> indices{};
 		for ( UINT iLat = 0; iLat < latDiv - 2; iLat++ )
 		{
 			UINT iTmp = longDiv - 1;
@@ -54,7 +54,7 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 			const UINT nextLat = prevLat + longDiv;
 
 			for ( UINT iLong = 0; iLong < longDiv; iLong++ )
-			{				
+			{
 				indices.push_back( prevLat + iTmp );
 				indices.push_back( nextLat + iTmp );
 				indices.push_back( prevLat + iLong );
@@ -62,13 +62,13 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 				indices.push_back( prevLat + iLong );
 				indices.push_back( nextLat + iTmp );
 				indices.push_back( nextLat + iLong );
-				
+
 				iTmp = iLong;
 			}
 		}
-		
+
 		UINT  iTmp = longDiv - 1;
-		for (UINT iLong = 0; iLong < longDiv; iLong++)
+		for ( UINT iLong = 0; iLong < longDiv; iLong++ )
 		{
 			// north pole
 			indices.push_back( iTmp );
@@ -86,16 +86,16 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 		AddIndexBuf( std::make_unique<IndexBuffer>( gfx, indices ) );
 
 		// add pixel shader bind
-		AddBind( std::make_unique<PixelShader>( gfx, L"SpherePS.cso" ) );
+		AddBind( std::make_unique<PixelShader>( gfx, L"BlackHolePS.cso" ) );
 
 		// add vertex shader bind
-		auto pVS = std::make_unique<VertexShader>( gfx, L"SphereVS.cso" );
+		auto pVS = std::make_unique<VertexShader>( gfx, L"BlackHoleVS.cso" );
 		auto pVSBc = pVS->GetByteCode();
 		AddBind( std::move( pVS ) );
 
 		// add input layout bind
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
+			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}
 		};
 		AddBind( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
@@ -116,11 +116,11 @@ Sphere::Sphere( DXDevice &gfx, Camera &cam )
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
 }
 
-void Sphere::Update( float dt )
+void BlackHole::Update( float dt )
 {
 	DX::XMStoreFloat3( &_pos, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &_velocity ), dt ),
-		DX::XMLoadFloat3( &_pos ))
+		DX::XMLoadFloat3( &_pos ) )
 	);
 
 	/*DX::XMStoreFloat3( &velocity, DX::XMVectorAdd(
@@ -137,11 +137,11 @@ void Sphere::Update( float dt )
 		DX::XMVectorScale( DX::XMLoadFloat3( &rotationVel ), dt ),
 		DX::XMLoadFloat3( &rotation ))
 	);*/
-	
+
 }
 
-inline DX::XMMATRIX Sphere::GetTransform() const
+inline DX::XMMATRIX BlackHole::GetTransform() const
 {
-	return DX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
+	return DX::XMMatrixRotationRollPitchYaw( _rotation.x, _rotation.y, _rotation.z ) *
 		DX::XMMatrixTranslation( _pos.x, _pos.y, _pos.z );
 }
