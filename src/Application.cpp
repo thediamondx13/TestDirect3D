@@ -1,6 +1,6 @@
 #include <Application.h>
 
-Application::Application() : _window( 1280, 720, L"Direct3D test app" ) {}
+Application::Application() : _window( 800, 600, L"Direct3D test app" ) {}
 
 int Application::Run()
 {
@@ -66,6 +66,10 @@ void Application::ProcessKeyboard( const float dt )
 	else if ( _window.keyboard.IsKeyDown( 'D' ) )
 		_window.GetGfxDevice().camera.MoveSideways( +dt );
 
+	if ( _window.keyboard.IsKeyDown( VK_SPACE ) )
+		_window.GetGfxDevice().camera.MoveVertical( +dt );
+	else if ( _window.keyboard.IsKeyDown( VK_CONTROL ) )
+		_window.GetGfxDevice().camera.MoveVertical( -dt );
 
 	std::optional<Keyboard::Event> e;
 	while ( (e = _window.keyboard.ReadKey()).has_value() )
@@ -86,13 +90,16 @@ void Application::ProcessKeyboard( const float dt )
 			case 'D':
 				_window.keyboard.ResetKey( 'A' );
 				break;
+
+			case VK_RETURN:
+				_rayTracingEnabled = !_rayTracingEnabled;
 			}
 		}
 		/*else
 		{
 			switch ( e->key )
 			{
-
+			
 			}
 		}*/
 	}
@@ -102,14 +109,25 @@ void Application::RenderFrame( float dt )
 {
 	_window.GetGfxDevice().FillBuffer( 0.3f, 0.1f, 0.1f );		
 
-	for ( auto &pPlanet : _planets )
+	if ( _rayTracingEnabled )
 	{
-		if ( pPlanet == nullptr ) break;
-		pPlanet->Draw( _window.GetGfxDevice() );
-		//pPlanet->Update( dt );
+		_bh->Draw( _window.GetGfxDevice() );
+
+		//debug only
+		/*for ( auto &pPlanet : _planets )
+			pPlanet->Draw( _window.GetGfxDevice() );*/
+	}
+	else
+	{
+		for ( auto &pPlanet : _planets )
+			pPlanet->Draw( _window.GetGfxDevice() );
 	}
 
-	_bh->Draw( _window.GetGfxDevice() );
+	//for ( auto &pPlanet : _planets )
+	//{
+	//	//if ( pPlanet == nullptr ) break;
+	//	pPlanet->Update( dt );
+	//}
 
 	_window.GetGfxDevice().SwapBuffers();
 }

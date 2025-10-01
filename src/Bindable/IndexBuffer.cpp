@@ -6,7 +6,7 @@ IndexBuffer::IndexBuffer( DXDevice &gfx, const std::vector<UINT> &indices ) :
 	const D3D11_BUFFER_DESC ibd{
 		static_cast<UINT>(_count * sizeof( UINT )),
 		D3D11_USAGE_DEFAULT, D3D11_BIND_INDEX_BUFFER,
-		0u, 0u, sizeof( UINT )
+		0u, 0u, static_cast<UINT>(sizeof( UINT ))
 	};
 
 	const D3D11_SUBRESOURCE_DATA isd{

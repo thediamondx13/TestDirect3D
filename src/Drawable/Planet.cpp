@@ -2,51 +2,55 @@
 
 Planet::Planet( DXDevice &gfx )
 {
-	_radius = 1.0f;
-	_pos = DX::XMFLOAT3( 0.0f, 0.0f, 8.4f );
-	_velocity = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	_acceleration = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_radius = 3.0f;
+	_pos = DX::XMFLOAT4( 0.0f, 0.0f, 65.0f, 1.0f );
+	_velocity = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
+	_acceleration = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 
-	_rotation = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	_rotationVel = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_rotation = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
+	_rotationVel = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 
 	if ( InitializeStatic() )
 	{
-		// generate and store vertices
-		std::vector<DX::XMFLOAT3> vertices{};		
-		constexpr int longDiv = 40;
+		// sphere parameters
 		constexpr int latDiv = 20;
-				
-		DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 0.0f );
-		const float longAng = DX::XM_2PI / longDiv;
+		constexpr int longDiv = 40;
 		const float latAng = DX::XM_PI / latDiv;
+		const float longAng = DX::XM_2PI / longDiv;
 
+		
+		// generate and store vertices of a sphere
+		std::vector<DX::XMFLOAT4> vertices{};
+		const DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 1.0f );
 		for ( int i = 1; i < latDiv; i++ )
 		{
-			DX::XMVECTOR latBase = DX::XMVector3Transform(
+			const DX::XMVECTOR latBase = DX::XMVector3TransformCoord(
 				base, DX::XMMatrixRotationY( latAng * i )
 			);
 			for (int j = 0; j < longDiv; j++)
 			{
-				vertices.emplace_back();				
-				DX::XMStoreFloat3( &vertices.back(),
-					DX::XMVector3Transform( latBase, DX::XMMatrixRotationX( longAng * j ) )
+				vertices.emplace_back();
+				DX::XMStoreFloat4( &vertices.back(),
+					DX::XMVector3TransformCoord( latBase, DX::XMMatrixRotationX( longAng * j ) )
 				);
 			}
 		}
 
 		const auto iNorthPole = vertices.size();
 		vertices.emplace_back();
-		DX::XMStoreFloat3( &vertices.back(), base );
+		DX::XMStoreFloat4( &vertices.back(), base );
 
 		const auto iSouthPole = vertices.size();
 		vertices.emplace_back();
-		DX::XMStoreFloat3( &vertices.back(), DX::XMVectorNegate(base) );		
+		DX::XMStoreFloat4( &vertices.back(), 
+			DX::XMVectorSetW( DX::XMVectorNegate( base ), 1.0f )
+		);
 
-		// bind generated vertices
 		AddBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
-		
-		std::vector<UINT> indices{};				
+
+
+		// generate and store indices of a sphere
+		std::vector<UINT> indices{};
 		for ( UINT iLat = 0; iLat < latDiv - 2; iLat++ )
 		{
 			UINT iTmp = longDiv - 1;
@@ -67,13 +71,14 @@ Planet::Planet( DXDevice &gfx )
 			}
 		}
 		
-		UINT  iTmp = longDiv - 1;
+		UINT iTmp = longDiv - 1;
 		for (UINT iLong = 0; iLong < longDiv; iLong++)
 		{
 			// north pole
 			indices.push_back( iTmp );
 			indices.push_back( iLong );
 			indices.push_back( iNorthPole );
+
 			// south pole
 			indices.push_back( (latDiv - 2) * longDiv + iLong );
 			indices.push_back( (latDiv - 2) * longDiv + iTmp );
@@ -81,35 +86,31 @@ Planet::Planet( DXDevice &gfx )
 
 			iTmp = iLong;
 		}
-
-		// add indices bind
 		AddIndexBuf( std::make_unique<IndexBuffer>( gfx, indices ) );
 
-		// add pixel shader bind
+
 		AddBind( std::make_unique<PixelShader>( gfx, L"PlanetPS.cso" ) );
 
-		// add vertex shader bind
+
 		auto pVS = std::make_unique<VertexShader>( gfx, L"PlanetVS.cso" );
-		auto pVSBc = pVS->GetByteCode();
+		const auto pVSBc = pVS->GetByteCode();
 		AddBind( std::move( pVS ) );
 
-		// add input layout bind
+
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
+			{"POS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
 		};
 		AddBind( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
-		// add primitive topology bind
+
 		AddBind( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
 	}
 	else
 	{
-		// get binds from static vector
-		// if it's initialized
 		SetIndexFromStatic();
 	}
 
-	// add transformation matrix vertex constant buffer bind
+
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
 }
 
@@ -141,9 +142,4 @@ inline DX::XMMATRIX Planet::GetTransform() const
 {
 	return DX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
 		DX::XMMatrixTranslation( _pos.x, _pos.y, _pos.z );
-}
-
-inline DX::XMVECTOR Planet::GetInfo() const
-{
-	return DX::XMVectorSet( _pos.x, _pos.y, _pos.z, _radius );
 }

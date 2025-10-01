@@ -2,87 +2,25 @@
 
 BlackHole::BlackHole( DXDevice &gfx, Camera &cam )
 {
-	_radius = 2.0f;
-	_pos = DX::XMFLOAT3( 0.0f, 0.0f, 5.0f );
-	_velocity = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	_acceleration = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_radius = 30.0f;
+	_pos = DX::XMFLOAT4( 0.0f, 0.0f, 40.0f, 1.0f );
+	_velocity = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
+	_acceleration = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 
-	_rotation = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
-	_rotationVel = DX::XMFLOAT3( 0.0f, 0.0f, 0.0f );
+	_rotation = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
+	_rotationVel = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 
 	if ( InitializeStatic() )
 	{
-		// generate and store vertices
-		std::vector<DX::XMFLOAT3> vertices{};
-		constexpr int longDiv = 40;
-		constexpr int latDiv = 20;
-
-		DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 0.0f );
-		const float longAng = DX::XM_2PI / longDiv;
-		const float latAng = DX::XM_PI / latDiv;
-
-		for ( int i = 1; i < latDiv; i++ )
-		{
-			DX::XMVECTOR latBase = DX::XMVector3Transform(
-				base, DX::XMMatrixRotationY( latAng * i )
-			);
-			for ( int j = 0; j < longDiv; j++ )
-			{
-				vertices.emplace_back();
-				DX::XMStoreFloat3( &vertices.back(),
-					DX::XMVector3Transform( latBase, DX::XMMatrixRotationX( longAng * j ) )
-				);
-			}
-		}
-
-		const auto iNorthPole = vertices.size();
-		vertices.emplace_back();
-		DX::XMStoreFloat3( &vertices.back(), base );
-
-		const auto iSouthPole = vertices.size();
-		vertices.emplace_back();
-		DX::XMStoreFloat3( &vertices.back(), DX::XMVectorNegate( base ) );
-
-		// bind generated vertices
+		// draw a full-screen quad
+		const std::vector<UINT> indices{ 0, 1, 2, 3 };
+		const std::vector<DX::XMFLOAT4> vertices{
+			DX::XMFLOAT4( -1.0f, -1.0f, 0.99f, 1.0f ),
+			DX::XMFLOAT4( -1.0f, +1.0f, 0.99f, 1.0f ),
+			DX::XMFLOAT4( +1.0f, -1.0f, 0.99f, 1.0f ),
+			DX::XMFLOAT4( +1.0f, +1.0f, 0.99f, 1.0f )
+		};
 		AddBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
-
-		std::vector<UINT> indices{};
-		for ( UINT iLat = 0; iLat < latDiv - 2; iLat++ )
-		{
-			UINT iTmp = longDiv - 1;
-			const UINT prevLat = iLat * longDiv;
-			const UINT nextLat = prevLat + longDiv;
-
-			for ( UINT iLong = 0; iLong < longDiv; iLong++ )
-			{
-				indices.push_back( prevLat + iTmp );
-				indices.push_back( nextLat + iTmp );
-				indices.push_back( prevLat + iLong );
-
-				indices.push_back( prevLat + iLong );
-				indices.push_back( nextLat + iTmp );
-				indices.push_back( nextLat + iLong );
-
-				iTmp = iLong;
-			}
-		}
-
-		UINT  iTmp = longDiv - 1;
-		for ( UINT iLong = 0; iLong < longDiv; iLong++ )
-		{
-			// north pole
-			indices.push_back( iTmp );
-			indices.push_back( iLong );
-			indices.push_back( iNorthPole );
-			// south pole
-			indices.push_back( (latDiv - 2) * longDiv + iLong );
-			indices.push_back( (latDiv - 2) * longDiv + iTmp );
-			indices.push_back( iSouthPole );
-
-			iTmp = iLong;
-		}
-
-		// add indices bind
 		AddIndexBuf( std::make_unique<IndexBuffer>( gfx, indices ) );
 
 		// add pixel shader bind
@@ -95,33 +33,34 @@ BlackHole::BlackHole( DXDevice &gfx, Camera &cam )
 
 		// add input layout bind
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}
+			{"POS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}
 		};
 		AddBind( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
 		// add primitive topology bind
-		AddBind( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
+		AddBind( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP ) );
 
 		// add camera pixel shader constant buffer
 		AddBind( std::make_unique<CameraConstBuf>( gfx, cam ) );
 	}
 	else
 	{
-		// get binds from static vector
-		// if it's initialized
 		SetIndexFromStatic();
 	}
 
-	// add transformation matrix vertex constant buffer bind
-	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
+	struct BlackHole
+	{
+		DX::XMFLOAT4 pos;
+		float rad;
+	};
 }
 
 void BlackHole::Update( float dt )
 {
-	DX::XMStoreFloat3( &_pos, DX::XMVectorAdd(
+	/*DX::XMStoreFloat4( &_pos, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &_velocity ), dt ),
 		DX::XMLoadFloat3( &_pos ) )
-	);
+	);*/
 
 	/*DX::XMStoreFloat3( &velocity, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &acceleration ), dt ),
@@ -137,7 +76,6 @@ void BlackHole::Update( float dt )
 		DX::XMVectorScale( DX::XMLoadFloat3( &rotationVel ), dt ),
 		DX::XMLoadFloat3( &rotation ))
 	);*/
-
 }
 
 inline DX::XMMATRIX BlackHole::GetTransform() const

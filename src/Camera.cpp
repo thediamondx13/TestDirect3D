@@ -1,52 +1,38 @@
 #include <Camera.h>
 
 Camera::Camera( int screenW, int screenH ) :
-	_resolution( DX::XMFLOAT3( screenW, screenH, static_cast<float>(screenW) / screenH ) )
+	_resolution( (float) screenW, (float) screenH, (float) screenW / screenH, 0.0f )
 {
 	// _resolution.z stores aspect ratio
 }
 
-DX::XMVECTOR Camera::GetRes() const
+DX::XMFLOAT4 Camera::GetPos() const
 {
-	return DX::XMLoadFloat3( &_resolution );
+	return _position;
 }
 
-DX::XMVECTOR Camera::GetPos() const
+DX::XMFLOAT4 Camera::GetResolution() const
 {
-	return DX::XMLoadFloat3( &_position );
+	return _resolution;
 }
 
 DX::XMMATRIX Camera::GetProjection() const
 {
-	return DX::XMMatrixPerspectiveLH( _resolution.z, 1.0f, _nearZ, _farZ );
+	return DX::XMMatrixPerspectiveFovLH( _fov, _resolution.z, _nearZ, _farZ );
 }
 
 DX::XMMATRIX Camera::GetCameraView() const
 {
-	const DX::XMVECTOR pos = DX::XMLoadFloat3( &_position );
-
-	return DX::XMMatrixLookToLH( pos,
-		DX::XMLoadFloat3( &_lookF ),
-		DX::XMLoadFloat3( &_lookU )
+	return DX::XMMatrixLookToLH(
+		DX::XMLoadFloat4( &_position ),
+		DX::XMLoadFloat4( &_lookF ),
+		DX::XMLoadFloat4( &_lookU )
 	);
-}
-
-void Camera::MoveSideways( float dt )
-{
-	const DX::XMVECTOR delta = DX::XMVectorScale( DX::XMLoadFloat3( &_lookR ), _velocity * dt );
-	DX::XMStoreFloat3( &_position, DX::XMVectorAdd( DX::XMLoadFloat3( &_position ), delta ) );
-}
-
-void Camera::MoveForward( float dt )
-{
-	const DX::XMVECTOR delta = DX::XMVectorScale( DX::XMLoadFloat3( &_lookF ), _velocity * dt );
-	DX::XMStoreFloat3( &_position, DX::XMVectorAdd( DX::XMLoadFloat3( &_position ), delta ) );
 }
 
 void Camera::ProcessMouseDelta( float dPitch, float dYaw )
 {
-
-	/* do not use _rotation directly as the .x 
+	/* do not use _rotation directly as the .x
 	 component is inverted, use _look(F/U/R) */
 
 	_rotation.x += _sensitivity * dPitch;
@@ -60,6 +46,48 @@ void Camera::ProcessMouseDelta( float dPitch, float dYaw )
 	UpdateLooks();
 }
 
+void Camera::MoveVertical( float dt )
+{
+	const DX::XMVECTOR delta = DX::XMVectorScale(
+		DX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), _velocity * dt
+	);
+
+	// scale this vector and add to position
+	DX::XMStoreFloat4( &_position,
+		DX::XMVectorAdd( DX::XMLoadFloat4( &_position ), delta )
+	);
+}
+
+void Camera::MoveSideways( float dt )
+{
+	// right look vector projected onto XZ plane
+	const DX::XMVECTOR rightXZ = DX::XMVector3Normalize(
+		DX::XMVectorSetY( DX::XMLoadFloat4( &_lookR ), 0.0f )
+	);
+
+	// scale this vector and add to position
+	DX::XMStoreFloat4( &_position,
+		DX::XMVectorAdd( DX::XMLoadFloat4( &_position ),
+			DX::XMVectorScale( rightXZ, _velocity * dt )
+		)
+	);
+}
+
+void Camera::MoveForward( float dt )
+{
+	// forward look vector projected onto XZ plane
+	const DX::XMVECTOR forwardXZ = DX::XMVector3Normalize(
+		DX::XMVectorSetY( DX::XMLoadFloat4( &_lookF ), 0.0f )
+	);
+
+	// scale this vector and add to position
+	DX::XMStoreFloat4( &_position,
+		DX::XMVectorAdd( DX::XMLoadFloat4( &_position ),
+			DX::XMVectorScale( forwardXZ, _velocity * dt )
+		)
+	);
+}
+
 void Camera::UpdateLooks()
 {
 	const DX::XMMATRIX rotate = DX::XMMatrixRotationRollPitchYaw(
@@ -67,17 +95,17 @@ void Camera::UpdateLooks()
 	);
 
 	// update forward vector
-	DX::XMStoreFloat3( &_lookF, DX::XMVector3Normalize(
-		DX::XMVector3Transform( DX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotate )
+	DX::XMStoreFloat4( &_lookF, DX::XMVector3Normalize(
+		DX::XMVector3TransformNormal( DX::XMVectorSet( 0.0f, 0.0f, 1.0f, 0.0f ), rotate )
 	) );
 
 	// update up vector
-	DX::XMStoreFloat3( &_lookU, DX::XMVector3Normalize(
-		DX::XMVector3Transform( DX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), rotate )
+	DX::XMStoreFloat4( &_lookU, DX::XMVector3Normalize(
+		DX::XMVector3TransformNormal( DX::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f ), rotate )
 	) );
 
 	// update right vector
-	DX::XMStoreFloat3( &_lookR, DX::XMVector3Normalize(
-		DX::XMVector3Transform( DX::XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f ), rotate )
+	DX::XMStoreFloat4( &_lookR, DX::XMVector3Normalize(
+		DX::XMVector3TransformNormal( DX::XMVectorSet( 1.0f, 0.0f, 0.0f, 0.0f ), rotate )
 	) );
 }

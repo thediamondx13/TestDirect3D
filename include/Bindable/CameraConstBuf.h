@@ -6,9 +6,9 @@
 
 struct CamBuf
 {
-	DX::XMMATRIX view;
-	DX::XMVECTOR pos;
-	DX::XMVECTOR res;
+	DX::XMFLOAT4X4 viewProjInv;
+	DX::XMFLOAT4 pos;
+	DX::XMFLOAT4 res;
 };
 
 class CameraConstBuf : public Bindable

@@ -54,4 +54,6 @@ protected:
 
     std::unique_ptr<BlackHole> _bh;
     std::vector<std::unique_ptr<Planet>> _planets;
+
+    bool _rayTracingEnabled = true;
 };

@@ -6,18 +6,15 @@ class Planet : public Drawable<Planet>
 {
 public:
 	Planet( DXDevice &gfx );
-
-	inline DX::XMMATRIX GetTransform() const override;
-	inline DX::XMVECTOR GetInfo() const;
 	void Update( float dt ) override;
+	inline DX::XMMATRIX GetTransform() const override;
 
 protected:
-
 	float _radius;
-	DX::XMFLOAT3 _pos;
-	DX::XMFLOAT3 _velocity;
-	DX::XMFLOAT3 _acceleration;
+	DX::XMFLOAT4 _pos;
+	DX::XMFLOAT4 _velocity;
+	DX::XMFLOAT4 _acceleration;
 
-	DX::XMFLOAT3 _rotation;
-	DX::XMFLOAT3 _rotationVel;
+	DX::XMFLOAT4 _rotation;
+	DX::XMFLOAT4 _rotationVel;
 };
