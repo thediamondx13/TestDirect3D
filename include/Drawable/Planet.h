@@ -5,9 +5,11 @@
 class Planet : public Drawable<Planet>
 {
 public:
-	Planet( DXDevice &gfx );
-	void Update( float dt ) override;
+	Planet( const DXDevice &gfx );
+
 	inline DX::XMMATRIX GetTransform() const override;
+	
+	void Update( float dt );
 
 protected:
 	float _radius;

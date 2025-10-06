@@ -5,8 +5,11 @@
 template<typename T>
 class Drawable : public DrawableBase
 {
+public:
+	Drawable() = default;
+
 protected:
-	static bool InitializeStatic() { return s_binds.empty(); }
+	static bool StaticsNotInitialized() { return s_binds.empty(); }
 
 	static void AddBindStatic( std::unique_ptr<Bindable> bind )
 	{
@@ -31,7 +34,7 @@ protected:
 		}
 	}
 
-	const std::vector<std::unique_ptr<Bindable>> &GetStaticBinds() const
+	std::vector<std::unique_ptr<Bindable>> &GetStaticBinds() const
 	{
 		return s_binds;
 	}

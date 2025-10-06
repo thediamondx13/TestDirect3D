@@ -1,22 +1,22 @@
 #include <Bindable/CameraConstBuf.h>
 
-CameraConstBuf::CameraConstBuf( DXDevice &gfx, const Camera &cam ) : _cam( cam ),
-	_pCamBuf( std::make_unique<PixelConstantBuffer<CamBuf>>( gfx ) )
+CameraConstBuf::CameraConstBuf( const DXDevice &gfx ) :
+	_camBuf( PixelConstantBuffer<CamBuf>( gfx ) )
 {}
 
-void CameraConstBuf::Bind( DXDevice &gfx )
+void CameraConstBuf::Bind( const DXDevice &gfx )
 {
 	CamBuf cb{};
 	
-	cb.pos = _cam.GetPos();
-	cb.res = _cam.GetResolution();
+	cb.pos = gfx.camera.GetPos();
+	cb.res = gfx.camera.GetResolution();
 	DX::XMStoreFloat4x4( &cb.viewProjInv,
 		DX::XMMatrixTranspose( DX::XMMatrixInverse( nullptr,
-			_cam.GetCameraView() * _cam.GetProjection()
+			gfx.camera.GetCameraView() * gfx.camera.GetProjection()
 		))
 	);
 	
-	_pCamBuf->Update( gfx, cb );
+	_camBuf.Update( gfx, cb );
 
-	_pCamBuf->Bind( gfx );
+	_camBuf.Bind( gfx );
 }

@@ -3,7 +3,6 @@
 // standard includes
 #include <Windows.h>
 #include <optional>
-#include <memory>
 
 // graphics includes
 #include <Controls/Keyboard.h>
@@ -13,12 +12,12 @@
 class Window
 {
 public:
-	Window( LONG width, LONG height, const LPCWSTR caption );
+	Window( LONG width, LONG height, bool windowed, const LPCWSTR caption );
 	~Window() { DestroyWindow( _hWnd ); }
 
 	static std::optional<int> ProcessMessages();
 
-	DXDevice &GetGfxDevice() { return *_pGfx; }
+	DXDevice &GetGfxDevice() { return *_pGfx.get(); }
 	LONG GetHeight() const { return _height; }
 	LONG GetWidth() const { return _width; }
 
@@ -46,12 +45,16 @@ private:
 	static LRESULT CALLBACK HandleRuntimeMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 	LRESULT HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam );
 
+	// graphics object pointer
 	std::unique_ptr<DXDevice> _pGfx;
 
 	// client and screen centers
 	POINT _cCenter, _sCenter;
+
+	// other window stuff
 	LONG _width, _height;
 	LPCWSTR _caption;
+	bool _windowed;
 	DWORD _style;
 	RECT _wRect;
 	HWND _hWnd;

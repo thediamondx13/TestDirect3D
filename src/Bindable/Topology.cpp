@@ -1,8 +1,8 @@
 #include <Bindable/Topology.h>
 
-Topology::Topology( DXDevice &gfx, D3D11_PRIMITIVE_TOPOLOGY type ) : _type( type ) {}
+Topology::Topology( const DXDevice &gfx, D3D11_PRIMITIVE_TOPOLOGY type ) : _type( type ) {}
 
-void Topology::Bind( DXDevice &gfx )
+void Topology::Bind( const DXDevice &gfx )
 {
-	GetContext( gfx )->IASetPrimitiveTopology( _type );
+	GetContext( gfx ).IASetPrimitiveTopology( _type );
 }

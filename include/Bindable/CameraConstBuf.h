@@ -1,8 +1,6 @@
 #pragma once
 
 #include "ConstantBuffers.h"
-#include <Camera.h>
-#include <memory>
 
 struct CamBuf
 {
@@ -14,10 +12,9 @@ struct CamBuf
 class CameraConstBuf : public Bindable
 {
 public:
-	CameraConstBuf( DXDevice &gfx, const Camera &cam );
-	void Bind( DXDevice &gfx ) override;
+	CameraConstBuf( const DXDevice &gfx );
+	void Bind( const DXDevice &gfx ) override;
 
 protected:
-	std::unique_ptr<PixelConstantBuffer<CamBuf>> _pCamBuf;
-	const Camera &_cam;
+	PixelConstantBuffer<CamBuf> _camBuf;
 };

@@ -20,12 +20,12 @@ class DXDevice
 
 public:
 	// constructor, operators, destructor
-	DXDevice( HWND hWnd, LONG width, LONG height );
+	DXDevice( HWND hWnd, LONG width, LONG height, bool windowed );
 
 	// drawing routine
-	void FillBuffer( float r, float g, float b );
-	void DrawIndexed( UINT count );
-	void SwapBuffers();
+	void FillBuffer( float r, float g, float b ) const;
+	void DrawIndexed( UINT count ) const;
+	void SwapBuffers() const;
 
 	Camera camera;
 
@@ -48,8 +48,4 @@ protected:
 
 	// DirectX depth-stencil view
 	ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
-
-	// stores last pDevice call result
-	// may be useful for debugging
-	HRESULT lastResult;
 };

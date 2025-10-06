@@ -1,12 +1,12 @@
 #include <Bindable/TransformConstBuf.h>
 
-TransformConstBuf::TransformConstBuf( DXDevice &gfx, const DrawableBase &parent ) : _parent( parent ),
-	_pTransformBuf( std::make_unique<VertexConstantBuffer<DX::XMMATRIX>>( gfx ) )
+TransformConstBuf::TransformConstBuf( const DXDevice &gfx, const DrawableBase &parent ) :
+	_transformBuf( VertexConstantBuffer<DX::XMMATRIX>( gfx ) ), _parent( parent )
 {}
 
-void TransformConstBuf::Bind( DXDevice &gfx )
+void TransformConstBuf::Bind( const DXDevice &gfx )
 {
-	_pTransformBuf->Update( gfx,
+	_transformBuf.Update( gfx,
 		DX::XMMatrixTranspose(
 			_parent.GetTransform() *
 			gfx.camera.GetCameraView() *
@@ -14,5 +14,5 @@ void TransformConstBuf::Bind( DXDevice &gfx )
 		)
 	);
 
-	_pTransformBuf->Bind( gfx );
+	_transformBuf.Bind( gfx );
 }

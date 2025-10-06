@@ -5,10 +5,11 @@
 class Bindable
 {
 public:
-	virtual void Bind( DXDevice &gfx ) = 0;
-	virtual ~Bindable() = default;
+	Bindable() = default;
+	
+	virtual void Bind( const DXDevice &gfx ) = 0;
 
 protected:
-	static ID3D11DeviceContext *GetContext( DXDevice &gfx );
-	static ID3D11Device *GetDevice( DXDevice &gfx );
+	static ID3D11Device &GetDevice( const DXDevice &gfx );
+	static ID3D11DeviceContext &GetContext( const DXDevice &gfx );
 };

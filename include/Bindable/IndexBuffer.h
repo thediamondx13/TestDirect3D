@@ -5,8 +5,8 @@
 class IndexBuffer : public Bindable
 {
 public:
-	IndexBuffer( DXDevice &gfx, const std::vector<UINT> &indices );
-	void Bind( DXDevice &gfx ) override;
+	IndexBuffer( const DXDevice &gfx, const std::vector<UINT> &indices );
+	void Bind( const DXDevice &gfx ) override;
 	UINT GetCount() const;
 
 protected:

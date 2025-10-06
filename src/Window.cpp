@@ -35,18 +35,36 @@ Window::WindowClass::~WindowClass()
 
 // ---------- WINDOW DEFINITION ----------
 
-Window::Window( LONG width, LONG height, const LPCWSTR name ) : _style( WindowClass::GetStyle() ),
-	_cCenter( width >> 1, height >> 1 ), _sCenter( width >> 1, height >> 1 ),
-	_caption( name ), _width( width ), _height( height )
+Window::Window( LONG width, LONG height, bool windowed, const LPCWSTR caption ) : _caption( caption ),
+	_width( width ), _height( height ), _windowed( windowed ),
+	_style( WindowClass::GetStyle() )
 {
+	// get screen width and height
+	int wid = GetSystemMetrics( SM_CXSCREEN );
+	int hei = GetSystemMetrics( SM_CYSCREEN );	
+
 	// center the window rect
-	_wRect.top = (GetSystemMetrics( SM_CYSCREEN ) - height) >> 1;
-	_wRect.left = (GetSystemMetrics( SM_CXSCREEN ) - width) >> 1;
-	_wRect.bottom = _wRect.top + height;
+	_wRect.top = (hei - height) >> 1;
+	_wRect.left = (wid - width) >> 1;
 	_wRect.right = _wRect.left + width;
-	
+	_wRect.bottom = _wRect.top + height;
+
+	if ( _windowed )
+	{
+		_cCenter.y = height >> 1;
+		_cCenter.x = width >> 1;
+	}
+	else
+	{
+		_cCenter.y = hei >> 1;
+		_cCenter.x = wid >> 1;
+	}
+
+	_sCenter.y = _cCenter.y;
+	_sCenter.x = _cCenter.x;
+
 	// adjust window's width and height	
-	AdjustWindowRect( &_wRect, _style, FALSE );	
+	AdjustWindowRect( &_wRect, _style, FALSE );
 	height = _wRect.bottom - _wRect.top;
 	width = _wRect.right -= _wRect.left;
 
@@ -55,10 +73,10 @@ Window::Window( LONG width, LONG height, const LPCWSTR name ) : _style( WindowCl
 		_wRect.left, _wRect.top, width, height, nullptr, nullptr,
 		WindowClass::GetInstance(), this
 	);
-	ShowWindow( _hWnd, SW_SHOW );	
+	ShowWindow( _hWnd, SW_SHOW );
 
 	// construct graphical device
-	_pGfx = std::make_unique<DXDevice>( _hWnd, _width, _height );
+	_pGfx = std::make_unique<DXDevice>( _hWnd, _width, _height, _windowed );
 }
 
 std::optional<int> Window::ProcessMessages()
@@ -137,7 +155,7 @@ LRESULT Window::HandleMsg( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 	// window move
 	case WM_MOVE:
 		_sCenter = _cCenter;
-		ClientToScreen( _hWnd, &_sCenter );		
+		ClientToScreen( _hWnd, &_sCenter );
 		break;
 
 	// mouse movement

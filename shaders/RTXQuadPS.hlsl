@@ -56,8 +56,8 @@ float4 main(float4 pos : SV_POSITION) : SV_TARGET
 {
     float3 ray = getRay(pos.xy);
     
-    BlackHole bh1 = { float3(10, 0, 20), 1.0f };
-    BlackHole bh2 = { float3(-20, 0, 30), 1.0f };
+    BlackHole bh = { float3(-10, 0, 20), 1.0f };
+    //BlackHole wh = { float3(-10, 0, 40), 1.0f };
     
     Planet sp = { float3(0, 0, 65), 3 };
 
@@ -73,19 +73,19 @@ float4 main(float4 pos : SV_POSITION) : SV_TARGET
             return float4(color, 1);
         }
         
-        if (distance(photon, bh1.pos) <= bh1.rad)
-            return float4(0.05, 0.05, 0.05, 1);
+        if (distance(photon, bh.pos) <= bh.rad)
+            return float4(0, 0, 0, 1);
         
-        if (distance(photon, bh2.pos) <= bh2.rad)
-            return float4(0.05, 0.05, 0.05, 1);
-        
-        ray = normalize(ray + normalize(bh1.pos - photon) * (0.03f / distance(bh1.pos, photon)));        
-        ray = normalize(ray + normalize(bh2.pos - photon) * (0.02f / distance(bh2.pos, photon)));
+        //if (distance(photon, wh.pos) <= wh.rad)
+        //    return float4(1, 1, 1, 1);
+
+        ray = normalize(ray + normalize(bh.pos - photon) * (0.03f / distance(bh.pos, photon)));
+        //ray = normalize(ray - normalize(wh.pos - photon) * (0.02f / distance(wh.pos, photon)));
         
         photon += ray * 0.2f;
     }
     
-    float4 upColor = float4(0.5f, 0.3f, 0.3f, 1);
-    float4 downColor = float4(0.3f, 0.1f, 0.1f, 1);    
+    float4 upColor = float4(0.4f, 0.2f, 0.7f, 1);
+    float4 downColor = float4(0.1f, 0.04f, 0.3f, 1);    
     return lerp(downColor, upColor, saturate(photon.y * 0.005f + 0.3f));
 }

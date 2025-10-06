@@ -5,8 +5,8 @@
 class VertexShader : public Bindable
 {
 public:
-	VertexShader( DXDevice &gfx, LPCWSTR path );
-	void Bind( DXDevice &gfx ) override;
+	VertexShader( const DXDevice &gfx, LPCWSTR path );
+	void Bind( const DXDevice &gfx ) override;
 	ID3DBlob *GetByteCode();
 
 protected:

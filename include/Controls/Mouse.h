@@ -47,11 +47,10 @@ public:
 
 	Mouse() : _pos( Pos( 0, 0 ) ) {};
 
-	bool IsCaptured() const { return _isCaptured; }
-
 	Pos GetPos() const { return _pos; }
-
+	bool IsCaptured() const { return _isCaptured; }
 	void SetPosition( Pos newPos ) { _pos = newPos; }
+
 	std::optional<Event> ReadEvent();
 	void FlushEventBuffer();
 

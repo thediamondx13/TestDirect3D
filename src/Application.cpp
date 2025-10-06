@@ -1,25 +1,13 @@
 #include <Application.h>
 
-Application::Application() : _window( 800, 600, L"Direct3D test app" ) {}
+Application::Application() : _window( 800, 600, true, L"Direct3D test app" ),
+	_universe( _window.GetGfxDevice() )
+{
+	//
+}
 
 int Application::Run()
 {
-	constexpr int size = 1;
-
-	_planets.resize( size );
-	for ( int i = 0; i < size; i++ )
-	{
-		_planets[i] = std::make_unique<Planet>( _window.GetGfxDevice() );
-		
-		/*for ( auto &pPlanet : _planets )
-		{
-			if ( pPlanet == nullptr ) break;
-			pPlanet->Update( 7.0f );
-		}*/
-	}
-	
-	_bh = std::make_unique<BlackHole>( _window.GetGfxDevice(), _window.GetGfxDevice().camera );
-
 	while ( true )
 	{
 		if ( const auto ecode = Window::ProcessMessages() ) return *ecode;
@@ -28,7 +16,10 @@ int Application::Run()
 		
 		ProcessMouse();
 		ProcessKeyboard( dt );
+		
 		RenderFrame( dt );
+
+		_universe.Update( dt );
 	}
 }
 
@@ -107,27 +98,8 @@ void Application::ProcessKeyboard( const float dt )
 
 void Application::RenderFrame( float dt )
 {
-	_window.GetGfxDevice().FillBuffer( 0.3f, 0.1f, 0.1f );		
-
-	if ( _rayTracingEnabled )
-	{
-		_bh->Draw( _window.GetGfxDevice() );
-
-		//debug only
-		/*for ( auto &pPlanet : _planets )
-			pPlanet->Draw( _window.GetGfxDevice() );*/
-	}
-	else
-	{
-		for ( auto &pPlanet : _planets )
-			pPlanet->Draw( _window.GetGfxDevice() );
-	}
-
-	//for ( auto &pPlanet : _planets )
-	//{
-	//	//if ( pPlanet == nullptr ) break;
-	//	pPlanet->Update( dt );
-	//}
-
-	_window.GetGfxDevice().SwapBuffers();
+	const DXDevice &gfx = _window.GetGfxDevice();
+	gfx.FillBuffer( 0.3f, 0.1f, 0.1f );
+	_universe.Draw( gfx );
+	gfx.SwapBuffers();
 }

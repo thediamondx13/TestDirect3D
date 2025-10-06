@@ -5,9 +5,7 @@
 
 // project includes
 #include <Window.h>
-
-#include <Drawable/Planet.h>
-#include <Drawable/BlackHole.h>
+#include <Universe.h>
 
 using namespace std::chrono;
 
@@ -51,9 +49,6 @@ protected:
 
     Timer _timer;
     Window _window;
-
-    std::unique_ptr<BlackHole> _bh;
-    std::vector<std::unique_ptr<Planet>> _planets;
-
+    Universe _universe;
     bool _rayTracingEnabled = true;
 };

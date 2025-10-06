@@ -6,10 +6,10 @@
 class TransformConstBuf : public Bindable
 {
 public:
-	TransformConstBuf( DXDevice &gfx, const DrawableBase &parent );
-	void Bind( DXDevice &gfx ) override;
+	TransformConstBuf( const DXDevice &gfx, const DrawableBase &parent );
+	void Bind( const DXDevice &gfx ) override;
 
 protected:
-	std::unique_ptr<VertexConstantBuffer<DX::XMMATRIX>> _pTransformBuf;
+	VertexConstantBuffer<DX::XMMATRIX> _transformBuf;
 	const DrawableBase &_parent;
 };

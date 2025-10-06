@@ -1,6 +1,6 @@
 #include <Drawable/Planet.h>
 
-Planet::Planet( DXDevice &gfx )
+Planet::Planet( const DXDevice &gfx )
 {
 	_radius = 3.0f;
 	_pos = DX::XMFLOAT4( 0.0f, 0.0f, 65.0f, 1.0f );
@@ -10,7 +10,7 @@ Planet::Planet( DXDevice &gfx )
 	_rotation = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 	_rotationVel = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
 
-	if ( InitializeStatic() )
+	if ( StaticsNotInitialized() )
 	{
 		// sphere parameters
 		constexpr int latDiv = 20;
@@ -18,10 +18,11 @@ Planet::Planet( DXDevice &gfx )
 		const float latAng = DX::XM_PI / latDiv;
 		const float longAng = DX::XM_2PI / longDiv;
 
-		
-		// generate and store vertices of a sphere
-		std::vector<DX::XMFLOAT4> vertices{};
+		std::vector<DX::XMFLOAT3> vertices{};
+		// base point that will be rotated
 		const DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 1.0f );
+
+		// generate and store vertices of a sphere		
 		for ( int i = 1; i < latDiv; i++ )
 		{
 			const DX::XMVECTOR latBase = DX::XMVector3TransformCoord(
@@ -30,27 +31,27 @@ Planet::Planet( DXDevice &gfx )
 			for (int j = 0; j < longDiv; j++)
 			{
 				vertices.emplace_back();
-				DX::XMStoreFloat4( &vertices.back(),
+				DX::XMStoreFloat3( &vertices.back(),
 					DX::XMVector3TransformCoord( latBase, DX::XMMatrixRotationX( longAng * j ) )
 				);
 			}
 		}
 
+		// store sphere's poles
 		const auto iNorthPole = vertices.size();
 		vertices.emplace_back();
-		DX::XMStoreFloat4( &vertices.back(), base );
+		DX::XMStoreFloat3( &vertices.back(), base );
 
 		const auto iSouthPole = vertices.size();
 		vertices.emplace_back();
-		DX::XMStoreFloat4( &vertices.back(), 
-			DX::XMVectorSetW( DX::XMVectorNegate( base ), 1.0f )
-		);
+		DX::XMStoreFloat3( &vertices.back(), DX::XMVectorNegate( base ) );
+		
+		// create vertex buffer
+		AddBindStatic( std::make_unique<VertexBuffer>( gfx, vertices ) );
 
-		AddBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
-
-
-		// generate and store indices of a sphere
+		
 		std::vector<UINT> indices{};
+		// generate and store indices of a sphere
 		for ( UINT iLat = 0; iLat < latDiv - 2; iLat++ )
 		{
 			UINT iTmp = longDiv - 1;
@@ -86,30 +87,30 @@ Planet::Planet( DXDevice &gfx )
 
 			iTmp = iLong;
 		}
-		AddIndexBuf( std::make_unique<IndexBuffer>( gfx, indices ) );
 
+		// create index buffer
+		AddIndexBufferStatic( std::make_unique<IndexBuffer>( gfx, indices ) );
 
-		AddBind( std::make_unique<PixelShader>( gfx, L"PlanetPS.cso" ) );
+		// create pixel shader
+		AddBindStatic( std::make_unique<PixelShader>( gfx, L"PlanetPS.cso" ) );
 
-
+		// create vertex shader
 		auto pVS = std::make_unique<VertexShader>( gfx, L"PlanetVS.cso" );
-		const auto pVSBc = pVS->GetByteCode();
-		AddBind( std::move( pVS ) );
+		auto *pVSBc = pVS->GetByteCode();
+		AddBindStatic( std::move( pVS ) );
 
-
+		// create input layout
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
+			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
 		};
-		AddBind( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
+		AddBindStatic( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
-
-		AddBind( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
+		AddBindStatic( std::make_unique<Topology>( gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
 	}
 	else
 	{
 		SetIndexFromStatic();
 	}
-
 
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
 }
