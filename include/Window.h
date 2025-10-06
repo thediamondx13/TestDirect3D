@@ -17,7 +17,7 @@ public:
 
 	static std::optional<int> ProcessMessages();
 
-	DXDevice &GetGfxDevice() { return *_pGfx.get(); }
+	DXDevice &GetGfxDevice() { return *_pGfx; }
 	LONG GetHeight() const { return _height; }
 	LONG GetWidth() const { return _width; }
 
