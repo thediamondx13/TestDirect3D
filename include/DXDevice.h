@@ -3,8 +3,9 @@
 // d3d11 libraries
 #include <d3d11.h>
 #include <d3dcompiler.h>
+
 #include <DirectXMath.h>
-#define DX DirectX
+namespace DX = DirectX;
 
 // standard includes
 #include <vector>

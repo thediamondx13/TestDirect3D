@@ -83,7 +83,7 @@ void Application::ProcessKeyboard( const float dt )
 				break;
 
 			case VK_RETURN:
-				_rayTracingEnabled = !_rayTracingEnabled;
+				_universe.ToggleRTX();
 			}
 		}
 		/*else

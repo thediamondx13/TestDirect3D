@@ -1,6 +1,6 @@
 #include <Universe.h>
 
-Universe::Universe( const DXDevice &gfx ) : _quad( gfx )
+Universe::Universe( const DXDevice &gfx ) : _quad( gfx ), _useRTX( false )
 {
 	constexpr int size = 1;
 
@@ -15,13 +15,18 @@ Universe::Universe( const DXDevice &gfx ) : _quad( gfx )
 	//		pPlanet->Update( 7.0f );
 	//	}*/
 	//}
-
-
 }
 
 void Universe::Draw( const DXDevice &gfx )
 {
-	_quad.Draw( gfx );
+	if ( _useRTX )
+	{
+		_quad.Draw( gfx );
+	}
+	else
+	{
+	
+	}
 }
 
 void Universe::Update( float dt )

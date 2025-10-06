@@ -1,7 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
-#define DX DirectX
+namespace DX = DirectX;
 
 class Camera
 {

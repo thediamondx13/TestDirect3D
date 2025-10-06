@@ -49,6 +49,7 @@ protected:
 
     Timer _timer;
     Window _window;
+
+    // all physic props
     Universe _universe;
-    bool _rayTracingEnabled = true;
 };

@@ -15,7 +15,14 @@ public:
 	
 	void Update( float dt );
 
-private:
+	void EnableRTX() { _useRTX = true; }
+	void DisableRTX() { _useRTX = false; }
+	void ToggleRTX() { _useRTX = !_useRTX; }
+
+protected:
+
+	bool _useRTX;
+
 	RTXQuad _quad;
 	//std::vector<std::unique_ptr<Planet>> _planets;
 };
