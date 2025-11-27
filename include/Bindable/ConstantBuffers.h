@@ -81,4 +81,11 @@ public:
 			0u, 1u, _pConstBuf.GetAddressOf()
 		);
 	};
+
+	void Bind( const DXDevice &gfx, const UINT slot )
+	{
+		GetContext( gfx ).PSSetConstantBuffers(
+			slot, 1u, _pConstBuf.GetAddressOf()
+		);
+	};
 };
