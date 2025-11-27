@@ -44,20 +44,20 @@ Window::Window( LONG width, LONG height, bool windowed, const LPCWSTR caption ) 
 	int hei = GetSystemMetrics( SM_CYSCREEN );	
 
 	// center the window rect
-	_wRect.top = (hei - height) >> 1;
-	_wRect.left = (wid - width) >> 1;
+	_wRect.top = (hei - height) / 2;
+	_wRect.left = (wid - width) / 2;
 	_wRect.right = _wRect.left + width;
 	_wRect.bottom = _wRect.top + height;
 
 	if ( _windowed )
 	{
-		_cCenter.y = height >> 1;
-		_cCenter.x = width >> 1;
+		_cCenter.y = height / 2;
+		_cCenter.x = width / 2;
 	}
 	else
 	{
-		_cCenter.y = hei >> 1;
-		_cCenter.x = wid >> 1;
+		_cCenter.y = hei / 2;
+		_cCenter.x = wid / 2;
 	}
 
 	_sCenter.y = _cCenter.y;
