@@ -2,14 +2,6 @@
 
 Planet::Planet( const DXDevice &gfx )
 {
-	_radius = 3.0f;
-	_pos = DX::XMFLOAT4( 0.0f, 0.0f, 65.0f, 1.0f );
-	_velocity = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
-	_acceleration = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
-
-	_rotation = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
-	_rotationVel = DX::XMFLOAT4( 0.0f, 0.0f, 0.0f, 0.0f );
-
 	if ( StaticsNotInitialized() )
 	{
 		// sphere parameters
@@ -20,7 +12,7 @@ Planet::Planet( const DXDevice &gfx )
 
 		std::vector<DX::XMFLOAT3> vertices{};
 		// base point that will be rotated
-		const DX::XMVECTOR base = DX::XMVectorSet( _radius, 0.0f, 0.0f, 1.0f );
+		const DX::XMVECTOR base = DX::XMVectorSet( 1.0f, 0.0f, 0.0f, 1.0f );
 
 		// generate and store vertices of a sphere		
 		for ( int i = 1; i < latDiv; i++ )
@@ -101,7 +93,7 @@ Planet::Planet( const DXDevice &gfx )
 
 		// create input layout
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POS", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}			
 		};
 		AddBindStatic( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
@@ -115,32 +107,75 @@ Planet::Planet( const DXDevice &gfx )
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
 }
 
+void Planet::SetAcceleration( const DX::XMVECTOR &a )
+{
+	DX::XMStoreFloat4( &_acceleration, a );
+}
+
+void Planet::SetVelocity( const DX::XMVECTOR &s )
+{
+	DX::XMStoreFloat4( &_velocity, s );
+}
+
+DX::XMVECTOR Planet::GetVelocity() const
+{
+	return DX::XMLoadFloat4( &_velocity );
+}
+
+void Planet::SetPosition( const DX::XMVECTOR &p )
+{
+	DX::XMStoreFloat4( &_pos, p );
+}
+
+DX::XMVECTOR Planet::GetPosition() const
+{
+	return DX::XMLoadFloat4( &_pos );
+}
+
+void Planet::SetRadius( const float newRadius )
+{
+	_radius = newRadius;
+}
+
+float Planet::GetRadius() const
+{
+	return _radius;
+}
+
+DX::XMFLOAT4 Planet::GetInfo() const
+{
+	return DX::XMFLOAT4( _pos.x, _pos.y, _pos.z, _radius );
+}
+
 void Planet::Update( float dt )
 {
-	/*DX::XMStoreFloat3( &_pos, DX::XMVectorAdd(
-		DX::XMVectorScale( DX::XMLoadFloat3( &_velocity ), dt ),
-		DX::XMLoadFloat3( &_pos ))
-	);*/
+	const DX::XMVECTOR newVelocity = DX::XMVectorAdd( DX::XMLoadFloat4( &_velocity ),
+		DX::XMVectorScale( DX::XMLoadFloat4( &_acceleration ), dt )
+	);
 
-	/*DX::XMStoreFloat3( &velocity, DX::XMVectorAdd(
-		DX::XMVectorScale( DX::XMLoadFloat3( &acceleration ), dt ),
-		DX::XMLoadFloat3( &velocity ))
-	);*/
+	DX::XMStoreFloat4( &_pos, DX::XMVectorAdd( DX::XMLoadFloat4( &_pos ), newVelocity ) );
 
-	/*if ( pos.x > 1 ) acceleration.x = -1.0f;
-	if ( pos.x < -1 ) acceleration.x = 1.0f;*/
-
-	//if ( abs( velocity.x ) > 3.0f ) velocity.x *= 0.9f;
+	DX::XMStoreFloat4( &_velocity, newVelocity );
 
 	/*DX::XMStoreFloat3( &rotation, DX::XMVectorAdd(
 		DX::XMVectorScale( DX::XMLoadFloat3( &rotationVel ), dt ),
 		DX::XMLoadFloat3( &rotation ))
 	);*/
-	
+}
+
+void Planet::SetMass( const float newMass )
+{
+	_mass = newMass;
+}
+
+float Planet::GetMass() const
+{
+	return _mass;
 }
 
 inline DX::XMMATRIX Planet::GetTransform() const
 {
-	return DX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
+	return DX::XMMatrixScaling( _radius, _radius, _radius ) *
+		DX::XMMatrixRotationRollPitchYaw(_rotation.x, _rotation.y, _rotation.z) *
 		DX::XMMatrixTranslation( _pos.x, _pos.y, _pos.z );
 }
