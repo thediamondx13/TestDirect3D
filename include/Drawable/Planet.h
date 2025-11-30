@@ -30,9 +30,18 @@ public:
 	void SetMass( const float newMass );
 	float GetMass() const;
 
+	// color
+	void SetColor( const DX::XMFLOAT4 color );
+
 	void Update( float dt );
 
 protected:
+
+	struct Vertex
+	{
+		DX::XMFLOAT4 position;
+		DX::XMFLOAT4 color;
+	};
 
 	float _mass = 0.0f;
 	float _radius = 0.0f;
@@ -45,4 +54,9 @@ protected:
 	// rotation
 	DX::XMFLOAT4 _rotation = { 0.0f, 0.0f, 0.0f, 0.0f };
 	DX::XMFLOAT4 _rotationVel = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	DX::XMFLOAT4 _color = { 0.5f, 0.2f, 0.6f, 0.0f };
+
+	std::vector<Planet::Vertex> GenerateVertices( const int latDiv, const int longDiv ) const;
+	std::vector<UINT> GenerateIndices( const UINT latDiv, const UINT longDiv ) const;
 };
