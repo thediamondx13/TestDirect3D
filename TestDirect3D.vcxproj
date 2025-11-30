@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="include\Drawable\RTXQuad.h" />
     <ClCompile Include="src\Bindable\CameraConstBuf.cpp" />
+    <ClCompile Include="src\Bindable\PlanetConstBuf.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Bindable\TransformConstBuf.cpp" />
     <ClCompile Include="src\Bindable\Bindable.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\Bindable\VertexShader.cpp" />
     <ClCompile Include="src\Bindable\PixelShader.cpp" />
     <ClCompile Include="src\Bindable\InputLayout.cpp" />
+    <ClCompile Include="src\Drawable\BlackHole.cpp" />
     <ClCompile Include="src\Drawable\DrawableBase.cpp" />
     <ClCompile Include="src\Drawable\Planet.cpp" />
     <ClCompile Include="src\Drawable\RTXQuad.cpp" />
@@ -192,11 +194,13 @@
     <ClInclude Include="include\Bindable\IndexBuffer.h" />
     <ClInclude Include="include\Bindable\InputLayout.h" />
     <ClInclude Include="include\Bindable\PixelShader.h" />
+    <ClInclude Include="include\Bindable\PlanetConstBuf.h" />
     <ClInclude Include="include\Bindable\Topology.h" />
     <ClInclude Include="include\Bindable\TransformConstBuf.h" />
     <ClInclude Include="include\Bindable\VertexBuffer.h" />
     <ClInclude Include="include\Bindable\VertexShader.h" />
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Drawable\BlackHole.h" />
     <ClInclude Include="include\Drawable\Drawable.h" />
     <ClInclude Include="include\Drawable\DrawableBase.h" />
     <ClInclude Include="include\Drawable\Planet.h" />
@@ -208,6 +212,16 @@
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="shaders\BlackHolePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="shaders\BlackHoleVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="shaders\RTXQuadVS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>

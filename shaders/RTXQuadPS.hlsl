@@ -1,13 +1,11 @@
 struct BlackHole
 {
-    float3 pos;
-    float rad;
+    float4 info;
 };
 
 struct Planet
 {
-    float3 pos;
-    float rad;
+    float4 info;
 };
 
 cbuffer Camera
@@ -19,12 +17,14 @@ cbuffer Camera
 
 cbuffer BlackHoles
 {
-    BlackHole bh[1];
+    uint bhCount;
+    BlackHole blackHoles[100];
 };
 
 cbuffer Planets
 {
-    Planet pl[1];
+    uint plCount;
+    Planet planets[100];
 };
 
 float3 getRay(float2 uv)
@@ -56,30 +56,29 @@ float4 main(float4 pos : SV_POSITION) : SV_TARGET
 {
     float3 ray = getRay(pos.xy);
     
-    BlackHole bh = { float3(-10, 0, 20), 1.0f };
-    //BlackHole wh = { float3(-10, 0, 40), 1.0f };
+    BlackHole bh = { blackHoles[0] };
     
-    Planet sp = { float3(0, 0, 65), 3 };
+    Planet sp = { planets[0] };
 
     float3 photon = camPos;
 
     for (int i = 0; i < 1000; i++)
     {
-        if (distance(photon, sp.pos) <= sp.rad)
+        if (distance(photon, sp.info.xyz) <= sp.info.w)
         {
-            float d = pow(dot(normalize(sp.pos - photon), ray), 2);
+            float d = pow(dot(normalize(sp.info.xyz - photon), ray), 2);
             float3 color = float3(0.5, 0.2, 0.6);
             color = saturate(color * (d + 0.4));
             return float4(color, 1);
         }
         
-        if (distance(photon, bh.pos) <= bh.rad)
+        if (distance(photon, bh.info.xyz) <= bh.info.w)
             return float4(0, 0, 0, 1);
         
         //if (distance(photon, wh.pos) <= wh.rad)
         //    return float4(1, 1, 1, 1);
 
-        ray = normalize(ray + normalize(bh.pos - photon) * (0.03f / distance(bh.pos, photon)));
+        ray = normalize(ray + normalize(bh.info.xyz - photon) * (0.03f / distance(bh.info.xyz, photon)));
         //ray = normalize(ray - normalize(wh.pos - photon) * (0.02f / distance(wh.pos, photon)));
         
         photon += ray * 0.2f;

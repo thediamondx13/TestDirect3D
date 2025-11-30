@@ -78,6 +78,12 @@
     <ClCompile Include="include\Drawable\RTXQuad.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Drawable\BlackHole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bindable\PlanetConstBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Window.h">
@@ -140,11 +146,19 @@
     <ClInclude Include="include\Universe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Drawable\BlackHole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Bindable\PlanetConstBuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\PlanetVS.hlsl" />
     <FxCompile Include="shaders\RTXQuadPS.hlsl" />
     <FxCompile Include="shaders\RTXQuadVS.hlsl" />
     <FxCompile Include="shaders\PlanetPS.hlsl" />
+    <FxCompile Include="shaders\BlackHoleVS.hlsl" />
+    <FxCompile Include="shaders\BlackHolePS.hlsl" />
   </ItemGroup>
 </Project>

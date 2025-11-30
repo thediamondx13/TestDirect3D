@@ -4,8 +4,25 @@
 #include <memory>
 
 // drawable objects
+#include <Drawable/BlackHole.h>
 #include <Drawable/Planet.h>
 #include <Drawable/RTXQuad.h>
+
+struct PlanetBuffer
+{
+	DX::XMUINT4 count;
+	DX::XMFLOAT4 info[100];
+	/* .xyz contain position in space
+	 .w contains the radius */
+};
+
+struct BlackHoleBuffer
+{
+	DX::XMUINT4 count;
+	DX::XMFLOAT4 info[100];
+	/* .xyz contain position in space
+	 .w contains the radius */
+};
 
 class Universe
 {
@@ -24,5 +41,16 @@ protected:
 	bool _useRTX;
 
 	RTXQuad _quad;
-	//std::vector<std::unique_ptr<Planet>> _planets;
+	
+	std::vector<std::unique_ptr<BlackHole>> _blackHoles;
+
+	PixelConstantBuffer<BlackHoleBuffer> _blackHoleBuffer;
+
+
+	std::vector<std::unique_ptr<Planet>> _planets;
+
+	PixelConstantBuffer<PlanetBuffer> _planetBuffer;
+
+	void BindBlackHoleBuffer( const DXDevice &gfx );
+	void BindPlanetBuffer( const DXDevice &gfx );
 };
