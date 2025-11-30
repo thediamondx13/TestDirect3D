@@ -44,19 +44,3 @@ protected:
 
 template<typename T>
 std::vector<std::unique_ptr<Bindable>> Drawable<T>::s_binds;
-
-// includes for child classes
-// 
-// buffer stuff
-#include <Bindable/TransformConstBuf.h>
-#include <Bindable/ConstantBuffers.h>
-#include <Bindable/CameraConstBuf.h>
-#include <Bindable/VertexBuffer.h>
-//
-// shader stuff
-#include <Bindable/VertexShader.h>
-#include <Bindable/PixelShader.h>
-//
-// format stuff
-#include <Bindable/InputLayout.h>
-#include <Bindable/Topology.h>
