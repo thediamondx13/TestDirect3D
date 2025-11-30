@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Bindable/PlanetConstBuf.h>
+
 #include "Drawable.h"
 
 class Planet : public Drawable<Planet>
@@ -32,6 +34,7 @@ public:
 
 	// color
 	void SetColor( const DX::XMFLOAT4 color );
+	DX::XMFLOAT4 GetColor() const;
 
 	void Update( float dt );
 
@@ -39,8 +42,7 @@ protected:
 
 	struct Vertex
 	{
-		DX::XMFLOAT4 position;
-		DX::XMFLOAT4 color;
+		DX::XMFLOAT3 position;
 	};
 
 	float _mass = 0.0f;

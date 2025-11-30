@@ -5,11 +5,11 @@ Planet::Planet( const DXDevice &gfx )
 	constexpr int latDiv = 20;
 	constexpr int longDiv = 40;
 
-	// create vertex buffer
-	AddBind( std::make_unique<VertexBuffer>( gfx, GenerateVertices( latDiv, longDiv ) ) );
-
 	if ( StaticsNotInitialized() )
 	{
+		// create vertex buffer
+		AddBindStatic( std::make_unique<VertexBuffer>( gfx, GenerateVertices( latDiv, longDiv ) ) );
+
 		// create index buffer
 		AddIndexBufferStatic( std::make_unique<IndexBuffer>( gfx, GenerateIndices( latDiv, longDiv ) ) );
 
@@ -23,8 +23,7 @@ Planet::Planet( const DXDevice &gfx )
 
 		// create input layout
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u},
-			{"COLOR", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0u, 16u, D3D11_INPUT_PER_VERTEX_DATA, 0u}
+			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0u, 0u, D3D11_INPUT_PER_VERTEX_DATA, 0u}
 		};
 		AddBindStatic( std::make_unique<InputLayout>( gfx, pVSBc, ied ) );
 
@@ -36,6 +35,8 @@ Planet::Planet( const DXDevice &gfx )
 	}
 
 	AddBind( std::make_unique<TransformConstBuf>( gfx, *this ) );
+
+	AddBind( std::make_unique<PlanetConstBuf>( gfx, *this ) );
 }
 
 void Planet::SetAcceleration( const DX::XMVECTOR &a )
@@ -83,6 +84,11 @@ void Planet::SetColor( const DX::XMFLOAT4 color )
 	_color = color;
 }
 
+DX::XMFLOAT4 Planet::GetColor() const
+{
+	return _color;
+}
+
 void Planet::Update( float dt )
 {
 	const DX::XMVECTOR newVelocity = DX::XMVectorAdd( DX::XMLoadFloat4( &_velocity ),
@@ -118,22 +124,18 @@ std::vector<Planet::Vertex> Planet::GenerateVertices( const int latDiv, const in
 		{
 			vertices.emplace_back();
 
-			DX::XMStoreFloat4( &vertices.back().position,
+			DX::XMStoreFloat3( &vertices.back().position,
 				DX::XMVector3TransformCoord( latBase, DX::XMMatrixRotationX( longAng * j ) )
 			);
-
-			vertices.back().color = _color;
 		}
 	}
 
 	// store sphere's poles
 	vertices.emplace_back();
-	DX::XMStoreFloat4( &vertices.back().position, base );
-	vertices.back().color = _color;
+	DX::XMStoreFloat3( &vertices.back().position, base );
 
 	vertices.emplace_back();
-	DX::XMStoreFloat4( &vertices.back().position, DX::XMVectorNegate( base ) );
-	vertices.back().color = _color;
+	DX::XMStoreFloat3( &vertices.back().position, DX::XMVectorNegate( base ) );
 
 	return vertices;
 }
