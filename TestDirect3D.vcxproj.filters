@@ -158,7 +158,5 @@
     <FxCompile Include="shaders\RTXQuadPS.hlsl" />
     <FxCompile Include="shaders\RTXQuadVS.hlsl" />
     <FxCompile Include="shaders\PlanetPS.hlsl" />
-    <FxCompile Include="shaders\BlackHoleVS.hlsl" />
-    <FxCompile Include="shaders\BlackHolePS.hlsl" />
   </ItemGroup>
 </Project>
