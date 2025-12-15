@@ -102,6 +102,22 @@ void Universe::Update( float dt )
 	}
 }
 
+void Universe::CreatePlanet( const DXDevice& gfx )
+{
+	_planets.push_back(std::make_unique<Planet>(gfx));
+	_planets.back()->SetPosition(gfx.camera.GetPos());
+	_planets.back()->SetRadius( 3 );
+	_planets.back()->SetMass( 1e12 );
+}
+
+void Universe::DeleteLastPlanet()
+{
+	if ( _planets.empty() ) return;
+
+	_planets.back().release();
+	_planets.pop_back();
+}
+
 void Universe::BindBlackHoleBuffer( const DXDevice &gfx )
 {
 	BlackHoleBuffer buf{};
@@ -128,7 +144,8 @@ void Universe::BindPlanetBuffer( const DXDevice &gfx )
 	for ( uint32_t i = 0; i < buf.count.x; i++ )
 	{
 		if ( _planets[i] == nullptr ) break;
-		buf.info[i] = _planets[i]->GetInfo();
+		buf.planets[i].info = _planets[i]->GetInfo();
+		buf.planets[i].color = _planets[i]->GetColor();
 	}
 
 	_planetBuffer.Update( gfx, buf );

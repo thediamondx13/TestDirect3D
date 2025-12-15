@@ -19,7 +19,8 @@ int Application::Run()
 		
 		RenderFrame( dt );
 
-		_universe.Update( dt );
+		if ( !_paused )
+			_universe.Update( dt );
 	}
 }
 
@@ -82,7 +83,18 @@ void Application::ProcessKeyboard( const float dt )
 				_window.keyboard.ResetKey( 'A' );
 				break;
 
-			case VK_RETURN:
+			case 'C':
+				_universe.CreatePlanet( _window.GetGfxDevice() );
+				break;
+			case 'X':
+				_universe.DeleteLastPlanet();
+				break;
+
+			case 'P':
+				_paused = !_paused;
+				break;
+
+			case 'R':
 				_universe.ToggleRTX();
 			}
 		}

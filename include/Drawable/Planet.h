@@ -10,15 +10,18 @@ public:
 	Planet( const DXDevice &gfx );
 
 	inline DX::XMMATRIX GetTransform() const override;
-	
+
 	void SetAcceleration( const DX::XMVECTOR &a );
-	
+	void SetAcceleration( const DX::XMFLOAT4 &a );
+
 	// velocity set/get
-	void SetVelocity( const DX::XMVECTOR &s );
+	void SetVelocity( const DX::XMVECTOR &v );
+	void SetVelocity( const DX::XMFLOAT4 &v );
 	DX::XMVECTOR GetVelocity() const;
 
 	// position set/get
 	void SetPosition( const DX::XMVECTOR &p );
+	void SetPosition( const DX::XMFLOAT4 &p );
 	DX::XMVECTOR GetPosition() const;
 
 	// radius set/get

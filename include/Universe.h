@@ -8,12 +8,18 @@
 #include <Drawable/Planet.h>
 #include <Drawable/RTXQuad.h>
 
+struct PlanetStruct
+{
+	/* .xyz contain position in space
+	 and .w contains the radius */
+	DX::XMFLOAT4 info;
+	DX::XMFLOAT4 color;
+};
+
 struct PlanetBuffer
 {
 	DX::XMUINT4 count;
-	DX::XMFLOAT4 info[100];
-	/* .xyz contain position in space
-	 .w contains the radius */
+	PlanetStruct planets[100];
 };
 
 struct BlackHoleBuffer
@@ -21,7 +27,7 @@ struct BlackHoleBuffer
 	DX::XMUINT4 count;
 	DX::XMFLOAT4 info[100];
 	/* .xyz contain position in space
-	 .w contains the radius */
+	 and .w contains the radius */
 };
 
 class Universe
@@ -35,6 +41,9 @@ public:
 	void EnableRTX() { _useRTX = true; }
 	void DisableRTX() { _useRTX = false; }
 	void ToggleRTX() { _useRTX = !_useRTX; }
+
+	void CreatePlanet( const DXDevice& gfx );
+	void DeleteLastPlanet();
 
 protected:
 

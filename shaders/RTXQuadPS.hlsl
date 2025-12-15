@@ -6,6 +6,7 @@ struct BlackHole
 struct Planet
 {
     float4 info;
+    float3 color;
 };
 
 cbuffer Camera
@@ -57,28 +58,19 @@ float4 main(float4 pos : SV_POSITION) : SV_TARGET
     float3 ray = getRay(pos.xy);
     
     BlackHole bh = { blackHoles[0] };
-    
-    Planet sp0 = { planets[0] };
-    Planet sp1 = { planets[1] };
 
     float3 photon = camPos;
 
     for (int i = 0; i < 1000; i++)
     {
-        if (distance(photon, sp0.info.xyz) <= sp0.info.w)
+        for (int planetIndex = 0; planetIndex < plCount; planetIndex++)
         {
-            float d = pow(dot(normalize(sp0.info.xyz - photon), ray), 2);
-            float3 color = float3(0.5, 0.2, 0.6);
-            color = saturate(color * (d + 0.4));
-            return float4(color, 1);
-        }
-        
-        if (distance(photon, sp1.info.xyz) <= sp1.info.w)
-        {
-            float d = pow(dot(normalize(sp1.info.xyz - photon), ray), 2);
-            float3 color = float3(1, 0.5, 0.5);
-            color = saturate(color * (d + 0.4));
-            return float4(color, 1);
+            Planet sp = planets[planetIndex];
+            if (distance(photon, sp.info.xyz) <= sp.info.w)
+            {
+                float d = pow(dot(normalize(sp.info.xyz - photon), ray), 2);
+                return float4(saturate(sp.color * (d + 0.4)), 1);
+            }
         }
         
         if (distance(photon, bh.info.xyz) <= bh.info.w)

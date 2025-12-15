@@ -52,4 +52,5 @@ protected:
 
     // all physic props
     Universe _universe;
+    bool _paused = true;
 };

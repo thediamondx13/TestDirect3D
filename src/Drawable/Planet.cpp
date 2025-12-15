@@ -39,14 +39,26 @@ Planet::Planet( const DXDevice &gfx )
 	AddBind( std::make_unique<PlanetConstBuf>( gfx, *this ) );
 }
 
+// acceleration
 void Planet::SetAcceleration( const DX::XMVECTOR &a )
 {
 	DX::XMStoreFloat4( &_acceleration, a );
 }
 
-void Planet::SetVelocity( const DX::XMVECTOR &s )
+void Planet::SetAcceleration( const DX::XMFLOAT4 &a )
 {
-	DX::XMStoreFloat4( &_velocity, s );
+	_acceleration = a;
+}
+
+// velocity
+void Planet::SetVelocity( const DX::XMVECTOR &v )
+{
+	DX::XMStoreFloat4( &_velocity, v );
+}
+
+void Planet::SetVelocity( const DX::XMFLOAT4 &v )
+{
+	_velocity = v;
 }
 
 DX::XMVECTOR Planet::GetVelocity() const
@@ -54,9 +66,15 @@ DX::XMVECTOR Planet::GetVelocity() const
 	return DX::XMLoadFloat4( &_velocity );
 }
 
+// position
 void Planet::SetPosition( const DX::XMVECTOR &p )
 {
 	DX::XMStoreFloat4( &_pos, p );
+}
+
+void Planet::SetPosition( const DX::XMFLOAT4 &p )
+{
+	_pos = p;
 }
 
 DX::XMVECTOR Planet::GetPosition() const
