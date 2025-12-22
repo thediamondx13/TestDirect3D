@@ -20,7 +20,8 @@ int Application::Run()
 		RenderFrame( dt );
 
 		if ( !_paused )
-			_universe.Update( dt );
+			_universe.Update( 0.01f );
+			//_universe.Update( dt );
 	}
 }
 

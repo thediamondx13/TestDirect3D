@@ -56,13 +56,12 @@ float3 getRay(float2 uv)
 float4 main(float4 pos : SV_POSITION) : SV_TARGET
 {
     float3 ray = getRay(pos.xy);
-    
-    BlackHole bh = { blackHoles[0] };
-
     float3 photon = camPos;
-
+    float3 dRay;
+    
     for (int i = 0; i < 1000; i++)
     {
+        // check if ray collides with a planet
         for (int planetIndex = 0; planetIndex < plCount; planetIndex++)
         {
             Planet sp = planets[planetIndex];
@@ -73,19 +72,23 @@ float4 main(float4 pos : SV_POSITION) : SV_TARGET
             }
         }
         
-        if (distance(photon, bh.info.xyz) <= bh.info.w)
-            return float4(0, 0, 0, 1);
-        
-        //if (distance(photon, wh.pos) <= wh.rad)
-        //    return float4(1, 1, 1, 1);
+        // check if ray collides with a black hole
+        for (int k = 0; k < bhCount; k++)
+            if (distance(photon, blackHoles[k].info.xyz) <= blackHoles[k].info.w)
+                return float4(0, 0, 0, 1);
 
-        ray = normalize(ray + normalize(bh.info.xyz - photon) * (0.03f / distance(bh.info.xyz, photon)));
-        //ray = normalize(ray - normalize(wh.pos - photon) * (0.02f / distance(wh.pos, photon)));
+   
+        // curve the ray towards the black hole
+        dRay = float3(0, 0, 0);
+        for (int k = 0; k < bhCount; k++)
+            dRay += 0.03f * normalize(blackHoles[k].info.xyz - photon) / distance(blackHoles[k].info.xyz, photon);
         
+        ray = normalize(ray + dRay);
+
         photon += ray * 0.2f;
     }
     
     float4 upColor = float4(0.4f, 0.2f, 0.7f, 1);
-    float4 downColor = float4(0.1f, 0.04f, 0.3f, 1);    
+    float4 downColor = float4(0.1f, 0.04f, 0.3f, 1);
     return lerp(downColor, upColor, saturate(photon.y * 0.005f + 0.3f));
 }
